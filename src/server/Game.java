@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
@@ -27,6 +30,8 @@ public class Game implements Runnable{
     
     private List<UserClient> players = new ArrayList<UserClient>(); //jatekvban levo jatekosok
     private List<String> fixedplayernames = new ArrayList<String>(); // egyszer mar csatalkozott jatekosok
+    private Map<String,String> playercolor;
+    private String currentturn;
     private Integer gameid; 
     private boolean gamestrated = false;
     private boolean gamehalted = false;
@@ -200,7 +205,44 @@ public class Game implements Runnable{
     
         Integer clientid = Integer.valueOf(message.get(0));
         String messageoperation = message.get(1);
+        
+        switch(messageoperation){
+        
+            case "move":{
+                
+                break;
+            }
+            
+            default:{
+                
+                break;
+            
+            }
+        
+        
+        
+        }
     
     }
     
+    public void newgameinit(){
+    
+        playercolor = new HashMap<String,String>();
+        
+        Random rand = new Random();
+        if(rand.nextInt(2) == 1){
+        
+            playercolor.put("white", players.get(0).getUsername());
+            playercolor.put("black", players.get(1).getUsername());
+            currentturn = players.get(0).getUsername();
+        
+        }
+        else{
+        
+            playercolor.put("white", players.get(1).getUsername());
+            playercolor.put("black", players.get(0).getUsername());
+            currentturn = players.get(1).getUsername();
+            
+        }
+    }
 }
