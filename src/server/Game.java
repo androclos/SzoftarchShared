@@ -1,6 +1,8 @@
 package server;
 
 
+import chess.Cell;
+import chess.ChessBoard;
 import client.Message;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class Game implements Runnable{
     private boolean loadedgame = false;
     private ArrayBlockingQueue<Message> gamemessageque;
     private Lobby lobby;
+    private ChessBoard board;
 
     public Game(ArrayBlockingQueue<Message> gamemessageq, Integer id, Lobby lob) {
         
@@ -51,6 +54,19 @@ public class Game implements Runnable{
         return gameid;
     }
     
+    public void broadcast(Message m){
+    
+        for(UserClient u : players){
+        
+            try {
+                u.getOutputStream().writeObject(m);
+            } catch (IOException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        }
+    
+    }
     
     
     public synchronized void addplayer(UserClient newuser){
@@ -210,6 +226,10 @@ public class Game implements Runnable{
         
             case "move":{
                 
+                Cell src = new Cell(Integer.valueOf(message.get(2)),Integer.valueOf(message.get(3)));
+                Cell dest = new Cell(Integer.valueOf(message.get(4)),Integer.valueOf(message.get(5)));
+                move(clientid,src,dest);
+                
                 break;
             }
             
@@ -218,8 +238,6 @@ public class Game implements Runnable{
                 break;
             
             }
-        
-        
         
         }
     
@@ -244,5 +262,40 @@ public class Game implements Runnable{
             currentturn = players.get(1).getUsername();
             
         }
+    }
+    
+    public void move(Integer id,Cell src, Cell dest){
+    
+        try{
+            
+            if(userbyid(id).getUsername() != currentturn){
+
+                Message notyourturn = new Message("Not your turn.");
+                userbyid(id).getOutputStream().writeObject(notyourturn);
+
+            }
+            
+            Integer outcome = board.move(src, dest, true);
+            
+            if(outcome == 1){
+            
+                Message succesfulmove = new Message("");
+                broadcast(succesfulmove);
+            
+            }
+            else{
+        
+                Message wrongmove = new Message("");
+                userbyid(id).getOutputStream().writeObject(wrongmove);
+
+            }
+
+            
+        }catch (IOException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    
+    
     }
 }

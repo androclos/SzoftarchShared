@@ -9,17 +9,17 @@ package chess;
  *
  * @author Pifko
  */
-class Cell {
+public class Cell {
 
     int i;
     int j;
 
-    Cell(int i, int j) {
+    public Cell(int i, int j) {
         this.i = i;
         this.j = j;
     }
 
-    Cell() {
+    public Cell() {
         i = j = 0;
     }
 

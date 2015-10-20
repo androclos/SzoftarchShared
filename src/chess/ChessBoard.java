@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  * @author Pifko
  */
-class ChessBoard {
+public class ChessBoard {
 
     boolean whiteOnTurn = true;
     Piece[][] chessboard = new Piece[8][8];
@@ -21,7 +21,7 @@ class ChessBoard {
         reset();
     }
         
-    Piece removePiece(Cell c)
+    public Piece removePiece(Cell c)
     {
      Piece p = getPiece(c);
      chessboard[c.i][c.j] = null;
@@ -34,7 +34,7 @@ class ChessBoard {
     }
 
 	
-    void reset() {
+    public void reset() {
         whiteOnTurn = true;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -73,7 +73,7 @@ class ChessBoard {
         return chessboard[c.i][c.j];
     }
 
-    int move(Cell c0, Cell c1, boolean doMove) {
+    public int move(Cell c0, Cell c1, boolean doMove) {
         Piece srcPiece = getPiece(c0);
         if (srcPiece == null || srcPiece.white != whiteOnTurn) {
             return 0;
