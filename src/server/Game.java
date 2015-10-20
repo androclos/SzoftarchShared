@@ -279,6 +279,7 @@ public class Game implements Runnable{
             
             if(outcome == 1){
             
+                currentturn = getotherplayer(userbyid(id).getUsername());
                 Message succesfulmove = new Message("");
                 broadcast(succesfulmove);
             
