@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,6 @@ import java.util.logging.Logger;
  */
 public class Game implements Runnable{
     
-    private char[][] table = new char[3][3];
     private List<UserClient> players = new ArrayList<UserClient>(); //jatekvban levo jatekosok
     private List<String> fixedplayernames = new ArrayList<String>(); // egyszer mar csatalkozott jatekosok
     private Integer gameid; 
@@ -181,4 +181,26 @@ public class Game implements Runnable{
     
         return "";
     }
+    
+    public List<String> msgprocess(Message m){
+    
+        StringTokenizer st = new StringTokenizer(m.getMessage(),":"); //a:b:b:c uzenete felosztasa
+        List<String> msgparts = new ArrayList<String>();      
+        int partnum = st.countTokens();
+                
+        for(int i = 0;i<partnum;i++){
+            msgparts.add(st.nextToken());
+        }
+    
+        return msgparts;
+    
+    }
+    
+    public void msghandler(List<String> message){
+    
+        Integer clientid = Integer.valueOf(message.get(0));
+        String messageoperation = message.get(1);
+    
+    }
+    
 }
