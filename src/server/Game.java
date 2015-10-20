@@ -225,21 +225,31 @@ public class Game implements Runnable{
         switch(messageoperation){
         
             case "move":{
-                
                 Cell src = new Cell(Integer.valueOf(message.get(2)),Integer.valueOf(message.get(3)));
                 Cell dest = new Cell(Integer.valueOf(message.get(4)),Integer.valueOf(message.get(5)));
                 move(clientid,src,dest);
-                
+                break;
+            }
+            case "leavegame":{
+                playerleaving(gameid);
+                break;
+            }
+            case "logout":{
+                playerleaving(gameid);
                 break;
             }
             
             default:{
-                
                 break;
-            
             }
         
         }
+    
+    }
+    
+    public void loadgame(){
+    
+        
     
     }
     

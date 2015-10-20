@@ -87,7 +87,7 @@ public class Lobby implements Runnable{
 
                 Message newmsg = this.messageque.take();
                 List<String> msgparts = msgprocess(newmsg.getMessage());
-                this.msghandler(msgparts);
+                this.msghandler(msgparts,newmsg);
  
             } catch (InterruptedException ex) {
                 Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
@@ -164,7 +164,7 @@ public class Lobby implements Runnable{
     }   
 
     
-    public void msghandler(List<String> message){
+    public void msghandler(List<String> message, Message original){
     
         Integer clientid = Integer.valueOf(message.get(0));
         String messageoperation = message.get(1);
@@ -177,6 +177,8 @@ public class Lobby implements Runnable{
             }
             case "logout":{
                 this.logout(clientid);
+                if(usertogame.containsKey(clientid))
+                    usertogame.get(clientid).addmessage(original);
                 break;
             }
             case "newgame":{
@@ -192,15 +194,17 @@ public class Lobby implements Runnable{
                 break;
             }
             case "move":{ ///ROSSZ elgondolas!
-                Integer gameid = Integer.valueOf(message.get(2));
+                /*Integer gameid = Integer.valueOf(message.get(2));
                 String gamemsg = loggedinuserclients.get(clientid).getUsername() + ":"+message.get(3)+":"+message.get(4);
                 Message msg = new Message(gamemsg);
-                this.gamemessage(gameid, msg);
+                this.gamemessage(gameid, msg);*/
+                usertogame.get(clientid).addmessage(original);
                 break;
             }
             
             case "leavegame":{
                 this.leavegame(clientid);
+                usertogame.get(clientid).addmessage(original);
                 break;
             }
             case "gamelist":{
