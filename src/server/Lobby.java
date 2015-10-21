@@ -247,6 +247,7 @@ public class Lobby implements Runnable{
         //userclients.remove(userclientid);
         loggedinuserclients.remove(userclientid);
         userclients.get(userclientid).setLoggedinuser(null);
+        leavegame(userclientid);
         
         
     }
