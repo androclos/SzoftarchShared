@@ -237,7 +237,7 @@ public class Lobby implements Runnable{
     public void joingame(Integer clientid, Integer gameid){
     
         this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
-        this.usertogame.put(gameid, this.gamelist.get(gameid));
+        this.usertogame.put(clientid, this.gamelist.get(gameid));
     
     }
     

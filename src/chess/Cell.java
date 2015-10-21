@@ -24,6 +24,6 @@ public class Cell {
     }
 
     public String toString() {
-        return "i: " + i + " j: " + j;
+        return i+""+j;
     }
 }

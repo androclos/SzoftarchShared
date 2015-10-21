@@ -119,4 +119,24 @@ public class ChessBoard {
         srcPiece.firstMove = false;
         return 1;
     }
+    
+    @Override
+    public String toString(){
+    
+        StringBuilder boardlist = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if(chessboard[i][j] != null){
+                
+                    boardlist.append((chessboard[i][j].toString() + String.valueOf(i) + String.valueOf(j)+":"));
+
+                
+                }
+                
+            }
+        }
+        
+        return boardlist.toString();
+    
+    }
 }
