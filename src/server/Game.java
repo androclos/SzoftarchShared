@@ -42,11 +42,12 @@ public class Game implements Runnable{
     private Lobby lobby;
     private ChessBoard board;
 
-    public Game(ArrayBlockingQueue<Message> gamemessageq, Integer id, Lobby lob) {
+    public Game(ArrayBlockingQueue<Message> gamemessageq, Integer id, Lobby lob, boolean loadgame) {
         
         this.gamemessageque = gamemessageq;
         this.gameid = id;
         this.lobby = lob;
+        this.loadedgame = loadgame;
         
     }
 
@@ -59,7 +60,7 @@ public class Game implements Runnable{
         for(UserClient u : players){
         
             try {
-                u.getOutputStream().writeObject(m);
+                sendmessage(u.getUserid(), m);
             } catch (IOException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -80,9 +81,10 @@ public class Game implements Runnable{
                 players.add(newuser);
                 if(!fixedplayernames.contains(newuser.getUsername()));
                     fixedplayernames.add(newuser.getUsername());
-                o = players.get(0).getOutputStream();
+
+                
                 Message msg = new Message("Waiting for player 2.");
-                o.writeObject(msg);
+                sendmessage(newuser.getUserid(), msg);
                 
                 System.out.println("Player: "+ this.players.get(0).getUsername() + " joind to game: " + this.gameid + ".");
                 System.out.println("New game with id: "+this.gameid+", started by: "+this.players.get(0).getUsername()+ ".");
@@ -95,14 +97,6 @@ public class Game implements Runnable{
                 if(!fixedplayernames.contains(newuser.getUsername()));
                     fixedplayernames.add(newuser.getUsername());
                 this.gamestrated = true;
-                
-                /*o = players.get(0).getOutputStream();
-                Message msg1 = new Message("The game has started.");
-                o.writeObject(msg1);
-                
-                o = players.get(1).getOutputStream();
-                Message msg2 = new Message("The game has started.");
-                o.writeObject(msg2);*/
                 
                 newgameinit();
                 
@@ -168,8 +162,8 @@ public class Game implements Runnable{
             Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game is halted.");
             for(UserClient u : this.players){
 
-                u.getOutputStream().writeObject(m2);
-                u.getOutputStream().writeObject(m3);
+                sendmessage(u.getUserid(), m2);
+                sendmessage(u.getUserid(), m3);
                 
             }
             
@@ -309,7 +303,7 @@ public class Game implements Runnable{
             if(userbyid(id).getUsername() != currentturn){
 
                 Message notyourturn = new Message("message:Not your turn.");
-                userbyid(id).getOutputStream().writeObject(notyourturn);
+                sendmessage(id, notyourturn);
                 return;
 
             }
@@ -326,7 +320,7 @@ public class Game implements Runnable{
             else{
         
                 Message wrongmove = new Message("message:Invalid move.");
-                userbyid(id).getOutputStream().writeObject(wrongmove);
+                sendmessage(id, wrongmove);
 
             }
             
@@ -344,5 +338,13 @@ public class Game implements Runnable{
         userbyid(id).getOutputStream().writeObject(m);
     
     }
-    
+
+    public boolean isLoadedgame() {
+        return loadedgame;
+    }
+
+    public void setLoadedgame(boolean loadedgame) {
+        this.loadedgame = loadedgame;
+    }
+
 }

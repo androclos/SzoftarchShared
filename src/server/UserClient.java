@@ -1,6 +1,7 @@
 package server;
 
 
+import client.Message;
 import database.User;
 import java.io.IOException;
 import java.io.ObjectOutput;
@@ -24,7 +25,6 @@ public class UserClient {
     
     private Integer userid = -1;
     private String username;
-    //private Socket clientsocket;
     private SSLSocket clientsocket;
     private ClientListener commthread;
     private boolean authenticated = false;
@@ -32,17 +32,14 @@ public class UserClient {
     
     ObjectOutputStream o;
 
-    public UserClient(Integer userid, String username, SSLSocket clientsocket,ClientListener comthread) {
-        try {
+    public UserClient(Integer userid, String username, SSLSocket clientsocket,ClientListener comthread) throws IOException {
+
             this.userid = userid;
             this.username = username;
             this.clientsocket = clientsocket;
             this.commthread = comthread;
-            
             this.o = new ObjectOutputStream(this.clientsocket.getOutputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(UserClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
 
     public ObjectOutputStream getOutputStream() {
@@ -81,7 +78,11 @@ public class UserClient {
         this.loggedinuser = loggedinuser;
     }
 
+    public void sendmessage(Message m) throws IOException{
     
+        o.writeObject(m);
+    
+    }
 
     
 }

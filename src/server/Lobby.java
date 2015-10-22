@@ -105,14 +105,13 @@ public class Lobby implements Runnable{
         String username = msgparts.get(2);
         String password = msgparts.get(3);
     
-        //DataOutputStream o;
         ObjectOutputStream o;
         User u = null;
         try{
         
             u = db.Login(username,password);
             
-            if(u != null/*userdatabase.get(username).equals(password)*/){
+            if(u != null){
                 
                 UserClient newloggedinuser = userclients.get(clientid);
                 newloggedinuser.setUsername(username);
@@ -123,9 +122,6 @@ public class Lobby implements Runnable{
                 
                 synchronized(loggedinuserclients.get(clientid).getClientsocket().getOutputStream()){
                         
-                    //o = new DataOutputStream(loggedinuserclients.get(clientid).getClientsocket().getOutputStream());
-                    //o.writeUTF("Succesful login.");
-                    //o = new ObjectOutputStream(loggedinuserclients.get(clientid).getClientsocket().getOutputStream());
                     Message newmsg = new Message("Succesful login.");
                     loggedinuserclients.get(clientid).getOutputStream().writeObject(newmsg);
                     System.out.println("Succesful login from: " + clientid +" as " + username +".");
@@ -195,10 +191,6 @@ public class Lobby implements Runnable{
                 break;
             }
             case "move":{ ///ROSSZ elgondolas!
-                /*Integer gameid = Integer.valueOf(message.get(2));
-                String gamemsg = loggedinuserclients.get(clientid).getUsername() + ":"+message.get(3)+":"+message.get(4);
-                Message msg = new Message(gamemsg);
-                this.gamemessage(gameid, msg);*/
                 usertogame.get(clientid).addmessage(original);
                 break;
             }
@@ -213,7 +205,7 @@ public class Lobby implements Runnable{
                 break;
             }
             default: {
-                this.messagetoclient(clientid, "Error: command does not exist.");
+                this.messagetoclient(clientid, "message:Error, command does not exist.");
                 break;
             }
         }
@@ -224,7 +216,7 @@ public class Lobby implements Runnable{
     
         this.gameids++;
         ArrayBlockingQueue<Message> newgameque = new ArrayBlockingQueue<Message>(100);
-        Game newgame = new Game(newgameque,this.gameids,this);
+        Game newgame = new Game(newgameque,this.gameids,this,false);
 
         newgame.addplayer(loggedinuserclients.get(clientid));
         this.gamelist.put(gameids, newgame);

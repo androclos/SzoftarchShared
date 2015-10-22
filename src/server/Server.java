@@ -67,11 +67,9 @@ public class Server implements Runnable{
         
         while(! isStopped()){
             
-            //Socket clientSocket = null;
             SSLSocket clientSocket = null;
             try {
                 
-                //clientSocket = this.serverSocket.accept();
                 clientSocket = (SSLSocket)this.serverSocket.accept();
                 clientnames++;
                 
@@ -110,11 +108,4 @@ public class Server implements Runnable{
         }
     }
 
-    private void openServerSocket() {
-        /*try {
-            this.serverSocket = new ServerSocket(this.serverPort);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot open port 8080", e);
-        }*/
-    }
 }

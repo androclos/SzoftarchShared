@@ -17,7 +17,6 @@ import javax.net.ssl.SSLSocket;
 
 public class ClientListener implements Runnable{ //csak hallgat az adott porton es tovabbitja az uzeneteket egy que-ba
 
-    //protected Socket clientSocket = null;
     protected SSLSocket clientSocket = null;
     protected ArrayBlockingQueue<Message> que = null;
     protected DataInputStream out;
@@ -26,16 +25,12 @@ public class ClientListener implements Runnable{ //csak hallgat az adott porton 
 
     protected volatile boolean stopthread = false;
 
-    public ClientListener(SSLSocket clientSocket, ArrayBlockingQueue<Message> a, Integer i) {
+    public ClientListener(SSLSocket clientSocket, ArrayBlockingQueue<Message> a, Integer i) throws IOException {
         this.clientSocket = clientSocket;
         this.que = a;
         this.clientid = i;
-        try {
-            out =  new DataInputStream(clientSocket.getInputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        out =  new DataInputStream(clientSocket.getInputStream());
+        in = new ObjectInputStream(clientSocket.getInputStream());
 
     }
 
@@ -58,6 +53,7 @@ public class ClientListener implements Runnable{ //csak hallgat az adott porton 
             }   
         } 
         catch (IOException ex) {
+            System.out.println("Connenction lost with client: "+ this.clientid);
             Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);
