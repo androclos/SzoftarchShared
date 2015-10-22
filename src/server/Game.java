@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class Game implements Runnable{
     private ArrayBlockingQueue<Message> gamemessageque;
     private Lobby lobby;
     private ChessBoard board;
+    private Date gamestarttime;
 
     public Game(ArrayBlockingQueue<Message> gamemessageq, Integer id, Lobby lob, boolean loadgame) {
         
@@ -88,6 +90,7 @@ public class Game implements Runnable{
             
             if(players.size() <1){
                 
+                gamestarttime = new Date();
                 players.add(newuser);
                 if(!fixedplayernames.contains(newuser.getUsername()));
                     fixedplayernames.add(newuser.getUsername());
@@ -358,5 +361,12 @@ public class Game implements Runnable{
     }
     
     public void loadgame(Integer id){}
+    
+    
+    public void savegametodatabse(){
+    
+        java.sql.Timestamp  sqlgamestartdate = new java.sql.Timestamp(new java.util.Date().getTime());
+    
+    }
 
 }

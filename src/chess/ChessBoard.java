@@ -33,6 +33,10 @@ public class ChessBoard {
     chessboard[c.i][c.j] = p;
     }
 
+    public Piece[][] getChessboard() {
+        return chessboard;
+    }
+
 	
     public void reset() {
         whiteOnTurn = true;

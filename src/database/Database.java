@@ -5,6 +5,8 @@
  */
 package database;
 
+import chess.ChessBoard;
+import chess.Piece;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +15,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -115,6 +118,57 @@ public class Database {
        if(rs != null)
            rs.close();
 
+   }
+    
+   public void savegame(Integer whiteid, Integer blackid, Integer currentturn, java.util.Date startdate, ChessBoard board) throws SQLException{ //untested
+   
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        String query = "INSERT INTO unfinishedgames(white_userid, black_userid, currentturn_userid, gamestartdate) VALUES(?, ?, ?, ?)";
+        
+        prepstat = conn.prepareStatement(query);
+        prepstat.setInt(1, whiteid);
+        prepstat.setInt(2, blackid);
+        prepstat.setInt(3, currentturn);
+        prepstat.setTimestamp(4, new java.sql.Timestamp(startdate.getTime()));
+        
+        prepstat.executeUpdate();
+        
+        /////////////////////////////
+        
+        query = "Select unfinishedgamesid FROM unfinishedgamesid WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
+        prepstat = conn.prepareStatement(query);
+        
+        prepstat.setInt(1, whiteid);
+        prepstat.setInt(2, blackid);
+        prepstat.setTimestamp(3, new java.sql.Timestamp(startdate.getTime()));
+        
+        rs = prepstat.executeQuery();
+        
+        Integer gameddtabaseid = 0;
+        while(rs.next()){
+            gameddtabaseid = rs.getInt("unfinishedgamesid");
+        }
+        
+        ////////////////////////////////
+        query =  "INSERT INTO gamepieces(gameid_unfinishedgameid, type, coordi, coordj) VALUES(?, ?, ?, ?)";
+        Object[][] bd = board.getChessboard();
+        
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+               
+                if(bd[i][j] != null){    
+                    prepstat.setInt(1, gameddtabaseid);
+                    prepstat.setString(2, bd[i][j].toString());
+                    prepstat.setInt(3, i);
+                    prepstat.setInt(4, j);
+                    prepstat.addBatch();
+                }
+            }
+        }
+        prepstat.executeBatch();
+
+        
+   
    }
     
 }

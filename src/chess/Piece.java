@@ -11,7 +11,7 @@ import java.util.LinkedList;
  *
  * @author Pifko
  */
-abstract class Piece {
+public abstract class Piece {
 
     boolean white;
     int dir;
