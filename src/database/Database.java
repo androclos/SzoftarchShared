@@ -179,7 +179,7 @@ FROM unfinishedgames
 JOIN unfinishedgames o1 
 LEFT JOIN chess_db.user o2 ON o1.black_userid1 = o2.userid
 LEFT JOIN chess_db.user o3 ON o1.white_userid = o3.userid
-LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid;  */
+LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid;  */ //game tablara  nevek
        
        List<String> games = new ArrayList<String>();
    
