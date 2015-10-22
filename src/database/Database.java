@@ -16,7 +16,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -120,7 +122,7 @@ public class Database {
 
    }
     
-   public void savegame(Integer whiteid, Integer blackid, Integer currentturn, java.util.Date startdate, ChessBoard board) throws SQLException{ //untested
+   public void saveGame(Integer whiteid, Integer blackid, Integer currentturn, java.util.Date startdate, ChessBoard board) throws SQLException{ //untested
    
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = "INSERT INTO unfinishedgames(white_userid, black_userid, currentturn_userid, gamestartdate) VALUES(?, ?, ?, ?)";
@@ -135,7 +137,7 @@ public class Database {
         
         /////////////////////////////
         
-        query = "Select unfinishedgamesid FROM unfinishedgamesid WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
+        query = "Select unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
         prepstat = conn.prepareStatement(query);
         
         prepstat.setInt(1, whiteid);
@@ -165,8 +167,30 @@ public class Database {
                 }
             }
         }
-        prepstat.executeBatch();
-
+        prepstat.executeBatch();   
+   
+   }
+   
+   public List<String> usersGame(Integer id) throws SQLException{
+   
+       
+       /*SELECT o2.name as black, o3.name as white, o4.name as current
+FROM unfinishedgames
+JOIN unfinishedgames o1 
+LEFT JOIN chess_db.user o2 ON o1.black_userid1 = o2.userid
+LEFT JOIN chess_db.user o3 ON o1.white_userid = o3.userid
+LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid;  */
+       
+       List<String> games = new ArrayList<String>();
+   
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        String query = "Select * FROM unfinishedgames WHERE white_userid = ? OR black_userid = ?";
+        
+        prepstat = conn.prepareStatement(query);
+        prepstat.setInt(1, id);
+        prepstat.setInt(2, id);
+        
+        return games;
         
    
    }
