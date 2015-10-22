@@ -42,17 +42,15 @@ public class Server implements Runnable{
             serverPort = port;
             
             Security.addProvider(new Provider());
-            
             System.setProperty("javax.net.ssl.trustStoreType","JCEKS");
             System.setProperty("javax.net.ssl.keyStore","C:/temp/keystore.ks"); //kulcsot tartalmazza
             System.setProperty("javax.net.ssl.keyStorePassword","password"); //password hozza
-            
             SSLServerSocketFactory sslServerSocketfactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
             serverSocket = (SSLServerSocket)sslServerSocketfactory.createServerSocket(serverPort);
-   
-            databaseconnection = new Database();
-            lob = new Lobby(messageque,databaseconnection);
 
+            lob = new Lobby(messageque);
+
+            databaseconnection = new Database();
             Endpoint.publish("http://localhost:7777/ws/user", new WebserviceImpl(databaseconnection)); // web servcei publish
             
             new Thread(lob).start(); //lobby

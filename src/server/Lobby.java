@@ -3,6 +3,7 @@ package server;
 
 import client.Message;
 import database.Database;
+import database.DatabaseConnectionFactory;
 import database.User;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -47,12 +48,12 @@ public class Lobby implements Runnable{
     
     private Integer gameids = 0;
     
-    public Lobby(ArrayBlockingQueue<Message> messageque, Database database) {
+    public Lobby(ArrayBlockingQueue<Message> messageque) throws IOException {
         this.messageque = messageque;
         this.userdatabase.put("alma", "alma");
         this.userdatabase.put("korte", "korte");
         this.userdatabase.put("barack", "barack");
-        this.db = database;
+        this.db = DatabaseConnectionFactory.GetDatabaseConnection();
         
     }
 
@@ -109,7 +110,7 @@ public class Lobby implements Runnable{
         User u = null;
         try{
         
-            u = db.Login(password, username);
+            u = db.Login(username,password);
             
             if(u != null/*userdatabase.get(username).equals(password)*/){
                 
@@ -243,13 +244,12 @@ public class Lobby implements Runnable{
     
     public void logout(Integer userclientid){
     
-        //userclients.get(userclientid).getCommthread().stopThread();
-        //userclients.remove(userclientid);
         loggedinuserclients.remove(userclientid);
         userclients.get(userclientid).setLoggedinuser(null);
-        leavegame(userclientid);
-        
-        
+        userclients.get(userclientid).setAuthenticated(false);
+        if(usertogame.keySet().contains(userclientid))
+            leavegame(userclientid);
+
     }
     
     public void gamemessage(Integer gameid,Message message){

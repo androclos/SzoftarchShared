@@ -83,7 +83,7 @@ public class Database {
         return null;
     }
     
-    public User Login(String password, String name) throws SQLException{
+    public User Login(String name, String password) throws SQLException{
         
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = "Select * FROM user WHERE name = ? AND password = ?";
@@ -102,11 +102,7 @@ public class Database {
         }
         
         closeConnection();
-        
-        if(u == null)
-            return null;
-        else 
-            return u;
+        return u;
 
     }
     

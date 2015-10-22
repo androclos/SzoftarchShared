@@ -165,7 +165,7 @@ public class Game implements Runnable{
             this.players.remove(this.userbyid(id));
             
             Message m2 = new Message("game:stopped");
-            Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game halted.");
+            Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game is halted.");
             for(UserClient u : this.players){
 
                 u.getOutputStream().writeObject(m2);
@@ -268,9 +268,7 @@ public class Game implements Runnable{
     }
     
     public void loadgame(){
-    
-        
-    
+
     }
     
     public void newgameinit() throws IOException{
@@ -327,7 +325,7 @@ public class Game implements Runnable{
             }
             else{
         
-                Message wrongmove = new Message("message:wrongmove");
+                Message wrongmove = new Message("message:Invalid move.");
                 userbyid(id).getOutputStream().writeObject(wrongmove);
 
             }
