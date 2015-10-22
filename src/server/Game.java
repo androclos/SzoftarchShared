@@ -49,6 +49,9 @@ public class Game implements Runnable{
         this.lobby = lob;
         this.loadedgame = loadgame;
         
+        if(loadedgame == true)
+            loadgame();
+        
     }
 
     public Integer getGameid() {
@@ -71,11 +74,18 @@ public class Game implements Runnable{
     
     
     public synchronized void addplayer(UserClient newuser){
-    
-        ObjectOutputStream o;
-        
+
         try{
         
+            if(loadedgame == true){
+            
+            
+                
+            
+            
+            }
+            
+            
             if(players.size() <1){
                 
                 players.add(newuser);
@@ -154,7 +164,7 @@ public class Game implements Runnable{
             UserClient leavingplayer = this.userbyid(id);
             
             Message m1 = new Message("message:You left the game.");
-            leavingplayer.getOutputStream().writeObject(m1);
+            sendmessage(id, m1);
 
             this.players.remove(this.userbyid(id));
             
@@ -346,5 +356,7 @@ public class Game implements Runnable{
     public void setLoadedgame(boolean loadedgame) {
         this.loadedgame = loadedgame;
     }
+    
+    public void loadgame(Integer id){}
 
 }
