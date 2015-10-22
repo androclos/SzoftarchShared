@@ -43,16 +43,12 @@ public class Lobby implements Runnable{
     Map<Integer,ArrayBlockingQueue<Message>> gamequelist = new HashMap<Integer,ArrayBlockingQueue<Message>>();
     Map<Integer,Game> usertogame = new ConcurrentHashMap<Integer,Game>();
     
-    Map<String,String> userdatabase = new HashMap<String, String>(); //kamu adatbazis
     Database db;
     
     private Integer gameids = 0;
     
     public Lobby(ArrayBlockingQueue<Message> messageque) throws IOException {
         this.messageque = messageque;
-        this.userdatabase.put("alma", "alma");
-        this.userdatabase.put("korte", "korte");
-        this.userdatabase.put("barack", "barack");
         this.db = DatabaseConnectionFactory.GetDatabaseConnection();
         
     }
@@ -204,6 +200,10 @@ public class Lobby implements Runnable{
                 this.sendGameList(clientid);
                 break;
             }
+            case "closeclient":{
+                closeclient(clientid);
+                break;
+            }
             default: {
                 this.messagetoclient(clientid, "message:Error, command does not exist.");
                 break;
@@ -239,8 +239,19 @@ public class Lobby implements Runnable{
         loggedinuserclients.remove(userclientid);
         userclients.get(userclientid).setLoggedinuser(null);
         userclients.get(userclientid).setAuthenticated(false);
-        if(usertogame.keySet().contains(userclientid))
+        if(usertogame.keySet().contains(userclientid)){
             leavegame(userclientid);
+            usertogame.remove(userclientid);
+        }
+
+    }
+    
+    public void closeclient(Integer id){
+    
+        logout(id);
+        userclients.get(id).getCommthread().stopThread();
+        userclients.remove(id);
+        System.out.println("Client: "+id+" ,closed the connection.");
 
     }
     
