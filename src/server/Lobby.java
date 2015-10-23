@@ -313,5 +313,11 @@ public class Lobby implements Runnable{
         
     
     }
+    
+    public Database getDatabaseAccess() throws IOException{
+    
+        return DatabaseConnectionFactory.GetDatabaseConnection();
+    
+    }
 
 }

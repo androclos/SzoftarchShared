@@ -359,7 +359,11 @@ public class Game implements Runnable{
         this.loadedgame = loadedgame;
     }
     
-    public void loadgame(Integer id){}
+    public void loadgame(Integer id){
+    
+        
+    
+    }
     
     
     public void savegametodatabse(){
