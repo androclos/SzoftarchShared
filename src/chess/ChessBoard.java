@@ -5,8 +5,10 @@
  */
 package chess;
 
+import database.ChessPiece;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -20,7 +22,13 @@ public class ChessBoard {
     public ChessBoard() {
         reset();
     }
+       
+    public ChessBoard(List<ChessPiece> list) {
         
+        buildBoard(list);
+        
+    }
+    
     public Piece removePiece(Cell c)
     {
      Piece p = getPiece(c);
@@ -141,6 +149,38 @@ public class ChessBoard {
         }
         
         return boardlist.toString();
+    
+    }
+    
+    public void buildBoard(List<ChessPiece> piecelist){
+        
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                chessboard[i][j] = null;
+            }
+        }
+    
+        for(ChessPiece p : piecelist){
+        
+            switch(p.getType()){
+            
+                case "P":{chessboard[p.getCoordi()][p.getCoordj()] = new Pawn(true);}
+                case "K":{chessboard[p.getCoordi()][p.getCoordj()] = new King(true);}
+                case "N":{chessboard[p.getCoordi()][p.getCoordj()] = new Knight(true);}
+                case "Q":{chessboard[p.getCoordi()][p.getCoordj()] = new Queen(true);}
+                case "R":{chessboard[p.getCoordi()][p.getCoordj()] = new Rook(true);}
+                case "B":{chessboard[p.getCoordi()][p.getCoordj()] = new Bishop(true);}
+                
+                case "p":{chessboard[p.getCoordi()][p.getCoordj()] = new Pawn(false);}
+                case "k":{chessboard[p.getCoordi()][p.getCoordj()] = new King(false);}
+                case "n":{chessboard[p.getCoordi()][p.getCoordj()] = new Knight(false);}
+                case "q":{chessboard[p.getCoordi()][p.getCoordj()] = new Queen(false);}
+                case "r":{chessboard[p.getCoordi()][p.getCoordj()] = new Rook(false);}
+                case "b":{chessboard[p.getCoordi()][p.getCoordj()] = new Bishop(false);}
+            
+            }
+
+        }
     
     }
 }

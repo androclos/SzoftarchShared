@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import server.Game;
 
 /**
  *
@@ -205,8 +206,24 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         }
         
         return games;
-        
+
+   }
    
+   public List<ChessPiece> loadGame(Integer id) throws SQLException{
+   
+       List<ChessPiece> pieces = new ArrayList<ChessPiece>();
+       
+       String query = "Select * FROM gamepieces WHERE gameid_unfinishedgamesid = ?";
+       conn = DriverManager.getConnection(DB_URL, USER, PASS);
+       
+       rs = prepstat.executeQuery();
+       
+        while(rs.next()){
+            ChessPiece p = new ChessPiece(rs.getString("type"), rs.getInt("coordinatei"), rs.getInt("coordinatej"));
+            pieces.add(p);
+        }
+    
+       return pieces;
    }
     
 }

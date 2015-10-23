@@ -15,9 +15,10 @@ public class ChessPiece {
     private Integer coordi;
     private Integer coordj;
 
-    public ChessPiece(String type, Integer coordi) {
+    public ChessPiece(String type, Integer coordi, Integer coordj) {
         this.type = type;
         this.coordi = coordi;
+        this.coordj = coordj;
     }
 
     public String getType() {
