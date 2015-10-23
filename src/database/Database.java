@@ -173,7 +173,7 @@ public class Database {
    
    }
    
-   public List<String> usersGame(Integer id) throws SQLException{
+   public List<String> getUsersGameList(Integer id) throws SQLException{
    
        
 /*SELECT o2.name as black, o3.name as white, o4.name as current
@@ -201,7 +201,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         
         rs = prepstat.executeQuery();
         while(rs.next()){
-            String s = rs.getInt("gameid")+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getInt("date");
+            String s = rs.getInt("gameid")+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getString("date");
             games.add(s);
         }
         
@@ -226,4 +226,20 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
        return pieces;
    }
     
+   public Integer getMaxGameId() throws SQLException{
+   
+       String query = "Select MAX(unfinishedgamesid) FROM unfinishedgames";
+       conn = DriverManager.getConnection(DB_URL, USER, PASS);
+       
+       rs = prepstat.executeQuery();
+       
+       Integer maxid = -1;
+       while(rs.next()){
+           maxid = rs.getInt("unfinishedgamesid");
+       }
+       
+       return maxid;
+     
+   }
+   
 }

@@ -47,9 +47,10 @@ public class Lobby implements Runnable{
     
     private Integer gameids = 0;
     
-    public Lobby(ArrayBlockingQueue<Message> messageque) throws IOException {
+    public Lobby(ArrayBlockingQueue<Message> messageque) throws IOException, SQLException {
         this.messageque = messageque;
         this.db = DatabaseConnectionFactory.GetDatabaseConnection();
+        gameids = db.getMaxGameId();
         
     }
 
@@ -186,7 +187,7 @@ public class Lobby implements Runnable{
                 this.joingame(clientid, gametojonid);
                 break;
             }
-            case "move":{ ///ROSSZ elgondolas!
+            case "move":{
                 usertogame.get(clientid).addmessage(original);
                 break;
             }
@@ -285,25 +286,32 @@ public class Lobby implements Runnable{
 
     public void sendGameList(Integer id){
     
-        ArrayList<String> listofgames = new ArrayList<String>();
-        String user = this.loggedinuserclients.get(id).getUsername();
-        
-        for (Map.Entry<Integer, Game> entry : this.gamelist.entrySet()){
-            
-            if(entry.getValue().ableToJoin(id))
-            //if(entry.getValue().ableToJoin(user))
-                //listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(user));
-                listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(id));
-        
-        }
-
-        Message m = new Message("Game list.");
-        m.setIsgamelist(true);
-        m.setGamelist(listofgames);
-        
         try {
+            ArrayList<String> listofgames = new ArrayList<String>();
+            String user = this.loggedinuserclients.get(id).getUsername();
+
+            for (Map.Entry<Integer, Game> entry : this.gamelist.entrySet()){
+
+                if(entry.getValue().ableToJoin(id))
+                //if(entry.getValue().ableToJoin(user))
+                    //listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(user));
+                    listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(id));
+
+            }
+
+            List<String> usersgamelist = db.getUsersGameList(id);
+            
+            for(String s : usersgamelist)
+                listofgames.add(s);
+            
+            Message m = new Message("Game list.");
+            m.setIsgamelist(true);
+            m.setGamelist(listofgames);
             this.loggedinuserclients.get(id).getOutputStream().writeObject(m);
+            
         } catch (IOException ex) {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
         
