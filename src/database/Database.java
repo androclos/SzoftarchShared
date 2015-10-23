@@ -122,7 +122,7 @@ public class Database {
 
    }
     
-   public void saveGame(Integer whiteid, Integer blackid, Integer currentturn, java.util.Date startdate, ChessBoard board) throws SQLException{ //untested
+   public void saveGame(Integer whiteid, Integer blackid, Integer currentturn, String startdate, ChessBoard board) throws SQLException{ //untested
    
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = "INSERT INTO unfinishedgames(white_userid, black_userid, currentturn_userid, gamestartdate) VALUES(?, ?, ?, ?)";
@@ -131,7 +131,7 @@ public class Database {
         prepstat.setInt(1, whiteid);
         prepstat.setInt(2, blackid);
         prepstat.setInt(3, currentturn);
-        prepstat.setTimestamp(4, new java.sql.Timestamp(startdate.getTime()));
+        prepstat.setString(4, startdate);
         
         prepstat.executeUpdate();
         
@@ -142,7 +142,7 @@ public class Database {
         
         prepstat.setInt(1, whiteid);
         prepstat.setInt(2, blackid);
-        prepstat.setTimestamp(3, new java.sql.Timestamp(startdate.getTime()));
+        prepstat.setString(3, startdate);
         
         rs = prepstat.executeQuery();
         
@@ -155,6 +155,7 @@ public class Database {
         query =  "INSERT INTO gamepieces(gameid_unfinishedgameid, type, coordi, coordj) VALUES(?, ?, ?, ?)";
         Object[][] bd = board.getChessboard();
         
+        prepstat = conn.prepareStatement(query);
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                
@@ -174,21 +175,34 @@ public class Database {
    public List<String> usersGame(Integer id) throws SQLException{
    
        
-       /*SELECT o2.name as black, o3.name as white, o4.name as current
+/*SELECT o2.name as black, o3.name as white, o4.name as current
 FROM unfinishedgames
 JOIN unfinishedgames o1 
-LEFT JOIN chess_db.user o2 ON o1.black_userid1 = o2.userid
+LEFT JOIN chess_db.user o2 ON o1.black_userid = o2.userid
 LEFT JOIN chess_db.user o3 ON o1.white_userid = o3.userid
-LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid;  */ //game tablara  nevek
+LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid
+WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
        
-       List<String> games = new ArrayList<String>();
+        List<String> games = new ArrayList<String>();
    
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        String query = "Select * FROM unfinishedgames WHERE white_userid = ? OR black_userid = ?";
+        String query =  "SELECT o2.name as black, o3.name as white, o4.name as current, o1.startdate as date, o1.unfinishedgamesid as gameid "+
+                        "FROM unfinishedgames "+
+                        "JOIN unfinishedgames o1 "+ 
+                        "LEFT JOIN chess_db.user o2 ON o1.black_userid = o2.userid "+
+                        "LEFT JOIN chess_db.user o3 ON o1.white_userid = o3.userid "+
+                        "LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid "+
+                        "WHERE o1.black_userid = ? OR o1.white_userid = ?;";
         
         prepstat = conn.prepareStatement(query);
         prepstat.setInt(1, id);
         prepstat.setInt(2, id);
+        
+        rs = prepstat.executeQuery();
+        while(rs.next()){
+            String s = rs.getInt("gameid")+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getInt("date");
+            games.add(s);
+        }
         
         return games;
         

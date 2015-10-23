@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class Game implements Runnable{
     private ArrayBlockingQueue<Message> gamemessageque;
     private Lobby lobby;
     private ChessBoard board;
-    private Date gamestarttime;
+    private String gamestarttime;
 
     public Game(ArrayBlockingQueue<Message> gamemessageq, Integer id, Lobby lob, boolean loadgame) {
         
@@ -50,9 +51,6 @@ public class Game implements Runnable{
         this.gameid = id;
         this.lobby = lob;
         this.loadedgame = loadgame;
-        
-        if(loadedgame == true)
-            loadgame();
         
     }
 
@@ -90,7 +88,8 @@ public class Game implements Runnable{
             
             if(players.size() <1){
                 
-                gamestarttime = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                gamestarttime = dateFormat.format(new Date());
                 players.add(newuser);
                 if(!fixedplayernames.contains(newuser.getUsername()));
                     fixedplayernames.add(newuser.getUsername());
@@ -365,7 +364,7 @@ public class Game implements Runnable{
     
     public void savegametodatabse(){
     
-        java.sql.Timestamp  sqlgamestartdate = new java.sql.Timestamp(new java.util.Date().getTime());
+        
     
     }
 
