@@ -118,6 +118,7 @@ public class Game implements Runnable{
                 this.gamestrated = true;
                 
                 newgameinit();
+                System.out.println(board.toString());
                 
                 System.out.println("Player: "+ this.players.get(1).getUsername() + " joind to game: " + this.gameid + ".");
                 System.out.println("Game: "+this.gameid+", started with: "+this.players.get(0).getUsername() + " and " + this.players.get(1).getUsername()+ ".");

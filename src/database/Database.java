@@ -216,6 +216,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
        String query = "Select * FROM gamepieces WHERE gameid_unfinishedgamesid = ?";
        conn = DriverManager.getConnection(DB_URL, USER, PASS);
        
+       prepstat = conn.prepareStatement(query);
        rs = prepstat.executeQuery();
        
         while(rs.next()){
@@ -231,11 +232,12 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
        String query = "Select MAX(unfinishedgamesid) FROM unfinishedgames";
        conn = DriverManager.getConnection(DB_URL, USER, PASS);
        
+       prepstat = conn.prepareStatement(query);
        rs = prepstat.executeQuery();
        
        Integer maxid = -1;
        while(rs.next()){
-           maxid = rs.getInt("unfinishedgamesid");
+           maxid = rs.getInt("MAX(unfinishedgamesid)");
        }
        
        return maxid;
