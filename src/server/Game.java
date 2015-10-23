@@ -4,10 +4,12 @@ package server;
 import chess.Cell;
 import chess.ChessBoard;
 import client.Message;
+import database.ChessPiece;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,8 +36,10 @@ public class Game implements Runnable{
     
     private List<UserClient> players = new ArrayList<UserClient>(); //jatekvban levo jatekosok
     private List<String> fixedplayernames = new ArrayList<String>(); // egyszer mar csatalkozott jatekosok
+    private Map<Integer,String> fixedplayers = new HashMap<Integer,String>(); // egyszer mar csatalkozott jatekosok
     private Map<String,String> playercolor;
-    private String currentturn;
+    //private String currentturn;
+    private Integer currentturnplayerid;
     private Integer gameid; 
     private boolean gamestrated = false;
     private boolean gamehalted = false;
@@ -52,6 +56,7 @@ public class Game implements Runnable{
         this.lobby = lob;
         this.loadedgame = loadgame;
         
+
     }
 
     public Integer getGameid() {
@@ -77,24 +82,21 @@ public class Game implements Runnable{
 
         try{
         
-            if(loadedgame == true){
-            
-            
-                
-            
-            
-            }
             
             
             if(players.size() <1){
                 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 gamestarttime = dateFormat.format(new Date());
+                
+                
                 players.add(newuser);
                 if(!fixedplayernames.contains(newuser.getUsername()));
                     fixedplayernames.add(newuser.getUsername());
 
-                
+                if(fixedplayers.containsKey(newuser.getUserid()) == false)
+                    fixedplayers.put(newuser.getUserid(),newuser.getUsername());
+                    
                 Message msg = new Message("Waiting for player 2.");
                 sendmessage(newuser.getUserid(), msg);
                 
@@ -106,8 +108,13 @@ public class Game implements Runnable{
             else{
                 
                 players.add(newuser);
+                fixedplayers.put(newuser.getUserid(),newuser.getUsername());
                 if(!fixedplayernames.contains(newuser.getUsername()));
                     fixedplayernames.add(newuser.getUsername());
+                
+                if(fixedplayers.containsKey(newuser.getUserid()) == false)
+                    fixedplayers.put(newuser.getUserid(),newuser.getUsername());
+                
                 this.gamestrated = true;
                 
                 newgameinit();
@@ -166,7 +173,7 @@ public class Game implements Runnable{
             UserClient leavingplayer = this.userbyid(id);
             
             Message m1 = new Message("message:You left the game.");
-            sendmessage(id, m1);
+            //sendmessage(id, m1); //exception dob ha nincs kliens kapcsolat hirtelen megszakad (nem csak logout) 
 
             this.players.remove(this.userbyid(id));
             
@@ -214,19 +221,32 @@ public class Game implements Runnable{
     
     }
     
-    public boolean ableToJoin(String username){
+    public boolean ableToJoin(Integer id/*String username*/){
     
-        return (this.fixedplayernames.contains(username) || (this.players.size()==1 && this.fixedplayernames.size() == 1));
+        //return (this.fixedplayernames.contains(username) || (this.players.size()==1 && this.fixedplayernames.size() == 1));
     
+        return fixedplayers.containsKey(id) || (this.players.size()== 1 && fixedplayers.size() == 1);
     }
     
-    public String getotherplayer(String user){
+    public String getotherplayer(Integer id/*String user*/){
     
-        for(String  s: fixedplayernames)
+        /*for(String  s: fixedplayernames)
             if(!s.equals(user))
                 return s;
     
-        return "";
+        return "";*/
+        
+        
+        String username = "";
+        for (Map.Entry<Integer, String> entry : this.fixedplayers.entrySet()){
+            
+            if(!entry.getKey().equals(id))
+                username = entry.getValue();
+        
+        }
+        return username;
+        
+        
     }
     
     public List<String> msgprocess(Message m){
@@ -264,6 +284,10 @@ public class Game implements Runnable{
                 playerleaving(gameid);
                 break;
             }
+            case "loadgame":{
+                loadgame(Integer.valueOf(message.get(2)));
+                break;
+            }
             
             default:{
                 break;
@@ -287,14 +311,14 @@ public class Game implements Runnable{
         
             playercolor.put("white", players.get(0).getUsername());
             playercolor.put("black", players.get(1).getUsername());
-            currentturn = players.get(0).getUsername();
+            currentturnplayerid = players.get(0).getUserid();
         
         }
         else{
         
             playercolor.put("white", players.get(1).getUsername());
             playercolor.put("black", players.get(0).getUsername());
-            currentturn = players.get(1).getUsername();
+            currentturnplayerid = players.get(1).getUserid();
             
         }
         
@@ -312,8 +336,8 @@ public class Game implements Runnable{
     
         try{
             
-            if(userbyid(id).getUsername() != currentturn){
-
+            //if(userbyid(id).getUsername() != currentturn){
+            if(id != currentturnplayerid){
                 Message notyourturn = new Message("message:Not your turn.");
                 sendmessage(id, notyourturn);
                 return;
@@ -324,7 +348,13 @@ public class Game implements Runnable{
             
             if(outcome == 1){
             
-                currentturn = getotherplayer(userbyid(id).getUsername());
+                //currentturn = getotherplayer(userbyid(id).getUsername());
+                for(Integer i : fixedplayers.keySet()){
+                
+                    if(!i.equals(id))
+                        currentturnplayerid = i;
+                
+                }
                 Message succesfulmove = new Message("move:"+src.toString()+":"+dest.toString());
                 broadcast(succesfulmove);
             
@@ -359,9 +389,18 @@ public class Game implements Runnable{
         this.loadedgame = loadedgame;
     }
     
-    public void loadgame(Integer id){
+    public void loadgame(Integer id){ //nincs kesz
     
-        
+        try {
+            List<ChessPiece> pieces = lobby.getDatabaseAccess().loadGame(id);
+            board.buildBoard(pieces);
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
     
     }
     

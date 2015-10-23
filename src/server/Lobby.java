@@ -290,8 +290,10 @@ public class Lobby implements Runnable{
         
         for (Map.Entry<Integer, Game> entry : this.gamelist.entrySet()){
             
-            if(entry.getValue().ableToJoin(user))
-                listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(user));
+            if(entry.getValue().ableToJoin(id))
+            //if(entry.getValue().ableToJoin(user))
+                //listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(user));
+                listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(id));
         
         }
 
