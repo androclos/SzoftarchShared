@@ -185,7 +185,7 @@ public class Database {
        this.saveBoard(gamedatabaseid, board);
    }
    
-   public List<String> getUsersGameList(Integer userid) throws SQLException{
+   public Map<Integer, String> getUsersGameList(Integer userid) throws SQLException{
    
        
 /*SELECT o2.name as black, o3.name as white, o4.name as current
@@ -197,6 +197,7 @@ LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid
 WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
        
         List<String> games = new ArrayList<String>();
+        Map<Integer,String> gamelist = new HashMap<Integer, String>();
    
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query =  "SELECT DISTINCT o2.userid as blackid, o2.name as black, o3.userid as whiteid, o3.name as white, o4.userid as currentid, o4.name as current, o1.startdate as date, o1.unfinishedgamesid as gameid "+
@@ -214,10 +215,12 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         rs = prepstat.executeQuery();
         while(rs.next()){
             String s = rs.getInt("gameid")+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getString("date");
-            games.add(s);
+            //games.add(s);
+            gamelist.put(rs.getInt("gameid"), s);
         }
         closeConnection();
-        return games;
+       // return games;
+        return gamelist;
    }
    
     public Map<String,String> getGameInformation(Integer gameid) throws SQLException{

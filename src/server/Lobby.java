@@ -197,7 +197,6 @@ public class Lobby implements Runnable{
             case "leavegame":{
                 usertogame.get(clientid).addmessage(original);
                 this.leavegame(clientid);
-                //usertogame.get(clientid).addmessage(original);
                 break;
             }
             case "gamelist":{
@@ -297,32 +296,38 @@ public class Lobby implements Runnable{
     
     public void leavegame(Integer id){
 
-        //this.usertogame.get(id).playerleaving(id);
         this.usertogame.remove(id);
     }
 
     public void sendGameList(Integer id){ //adatbazisbol vissza adja azokat a jatekokat amik lehet hogy be vannak toltve
     
         try {
-            ArrayList<String> listofgames = new ArrayList<String>();
-
+            
+            ArrayList<String> listofongoinggames = new ArrayList<String>();
+            ArrayList<Integer> ongoinggameids = new ArrayList<Integer>();
             for (Map.Entry<Integer, Game> entry : this.gamelist.entrySet()){
 
-                if(entry.getValue().ableToJoin(id))
-                //if(entry.getValue().ableToJoin(user))
-                    //listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(user));
-                    listofgames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(id));
-
+                if(entry.getValue().ableToJoin(id)){
+                    listofongoinggames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(id));
+                    ongoinggameids.add(entry.getValue().getGameid());
+                }
             }
 
-            List<String> usersgamelist = db.getUsersGameList(id);
+            Map<Integer, String> listofloadablegames = db.getUsersGameList(id);
             
-            for(String s : usersgamelist)
-                listofgames.add(s);
+            /*for(String s : listofloadablegames)
+                listofongoinggames.add(s);*/
             
+            for (Map.Entry<Integer, String> entry : listofloadablegames.entrySet()){
+
+                if(!ongoinggameids.contains(entry.getKey())){
+                    listofongoinggames.add(entry.getValue());
+                }
+            }
+
             Message m = new Message("Game list.");
             m.setIsgamelist(true);
-            m.setGamelist(listofgames);
+            m.setGamelist(listofongoinggames);
             this.loggedinuserclients.get(id).getOutputStream().writeObject(m);
             
         } catch (IOException ex) {
@@ -330,8 +335,6 @@ public class Lobby implements Runnable{
         } catch (SQLException ex) {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    
     }
     
     public void gameneded(Integer gid){

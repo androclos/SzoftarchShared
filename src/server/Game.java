@@ -112,9 +112,6 @@ public class Game implements Runnable{
                 
                 
                 players.add(newuser);
-                if(!fixedplayernames.contains(newuser.getUsername()));
-                    fixedplayernames.add(newuser.getUsername());
-
                 if(fixedplayers.containsKey(newuser.getUserid()) == false)
                     fixedplayers.put(newuser.getUserid(),newuser.getUsername());
                     
@@ -128,18 +125,13 @@ public class Game implements Runnable{
             
             else{
                 
-                players.add(newuser);
-                fixedplayers.put(newuser.getUserid(),newuser.getUsername());
-                if(!fixedplayernames.contains(newuser.getUsername()));
-                    fixedplayernames.add(newuser.getUsername());
-                
+                players.add(newuser);       
                 if(fixedplayers.containsKey(newuser.getUserid()) == false)
                     fixedplayers.put(newuser.getUserid(),newuser.getUsername());
                 
                 this.gamestrated = true;
                 
                 newgameinit();
-                System.out.println(board.toString());
                 
                 System.out.println("Player: "+ this.players.get(1).getUsername() + " joind to game: " + this.gameid + ".");
                 System.out.println("Game: "+this.gameid+", started with: "+this.players.get(0).getUsername() + " and " + this.players.get(1).getUsername()+ ".");
@@ -149,39 +141,28 @@ public class Game implements Runnable{
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public synchronized Integer numberofplayers(){
-    
-       return this.players.size();
-    
-    }
-    
+
     public synchronized void addmessage(Message s){
     
         this.gamemessageque.add(s);
         
     }
-
-    public boolean isGamestrated() {
-        return gamestrated;
-    }
-
     
     @Override
     public void run() {
         
         while(true){
-        try {
-            
-            Message newmsg = this.gamemessageque.take();
-            System.out.println("Game message: "+newmsg.getMessage());
-            
-            List<String> message = msgprocess(newmsg);
-            msghandler(message);
-            
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            try {
+
+                Message newmsg = this.gamemessageque.take();
+                System.out.println("Game message: "+newmsg.getMessage());
+
+                List<String> message = msgprocess(newmsg);
+                msghandler(message);
+
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
     }
@@ -214,7 +195,7 @@ public class Game implements Runnable{
                 
             }
  
-        } catch (Exception ex/*IOException ex*/) {
+        } catch (IOException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -247,21 +228,12 @@ public class Game implements Runnable{
     
     }
     
-    public boolean ableToJoin(Integer id/*String username*/){
-    
-        //return (this.fixedplayernames.contains(username) || (this.players.size()==1 && this.fixedplayernames.size() == 1));
-    
+    public boolean ableToJoin(Integer id){
+
         return fixedplayers.containsKey(id) || (this.players.size()== 1 && fixedplayers.size() == 1);
     }
     
-    public String getotherplayer(Integer id/*String user*/){
-    
-        /*for(String  s: fixedplayernames)
-            if(!s.equals(user))
-                return s;
-    
-        return "";*/
-        
+    public String getotherplayer(Integer id){
         
         String username = "";
         for (Map.Entry<Integer, String> entry : this.fixedplayers.entrySet()){
@@ -359,7 +331,6 @@ public class Game implements Runnable{
     
         try{
             
-            //if(userbyid(id).getUsername() != currentturn){
             if(id != currentturnplayerid){
                 Message notyourturn = new Message("message:Not your turn.");
                 sendmessage(id, notyourturn);
@@ -370,7 +341,6 @@ public class Game implements Runnable{
             
             if(outcome == 1){
             
-                //currentturn = getotherplayer(userbyid(id).getUsername());
                 for(Integer i : fixedplayers.keySet()){
                 
                     if(!i.equals(id))
