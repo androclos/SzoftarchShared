@@ -46,7 +46,6 @@ public class Database {
            
            PASS = dbproperties.get("dbpassword");
            USER = dbproperties.get("dbuser"); 
-
     }
 
     public static HashMap<String,String> GetconenctionsInfo() throws IOException{
@@ -65,7 +64,6 @@ public class Database {
         }
     
         return properties;
-    
     }
 
     
@@ -89,7 +87,6 @@ public class Database {
         
         closeConnection();
         return u;
-
     }
     
     private void closeConnection() throws SQLException{
@@ -100,7 +97,6 @@ public class Database {
            prepstat.close();
        if(rs != null)
            rs.close();
-
    }
    
    public void addNewGame(Integer whiteid, Integer blackid, Integer currentturn, String startdate, ChessBoard board) throws SQLException{
@@ -115,13 +111,70 @@ public class Database {
         prepstat.setString(4, startdate);
         
         prepstat.executeUpdate();
-
    }
    
-   //public Integer getExactGameId(Integer whiteid, Integer blackid, String startdate)
+   public Integer getExactGameId(Integer whiteid, Integer blackid, String startdate) throws SQLException{
+
+        String query = "SELECT unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
+        prepstat = conn.prepareStatement(query);
+        
+        prepstat.setInt(1, whiteid);
+        prepstat.setInt(2, blackid);
+        prepstat.setString(3, startdate);
+        
+        rs = prepstat.executeQuery();
+        
+        Integer gamedatabaseid = -1;
+        while(rs.next()){
+            gamedatabaseid = rs.getInt("unfinishedgamesid");
+        }
+        
+        return gamedatabaseid;
+   }
+   
+   public void updateGameState(Integer gameid, Integer currentplayer) throws SQLException{
+   
+        String query = " UPDATE unfinishedgames SET currentturn_userid = ? WHERE unfinishedgamesid = ?";
+        prepstat = conn.prepareStatement(query);
+        
+        prepstat.setInt(1, currentplayer);
+        prepstat.setInt(2, gameid);
+        prepstat.executeUpdate();
+   }
+   
+   public void clearGamePieceList(Integer gameid) throws SQLException{
+   
+        String query = "DELETE FROM gamepieces WHERE gameid_unfinishedgameid = ?";
+        prepstat = conn.prepareStatement(query);
+        
+        prepstat.setInt(1, gameid);
+        prepstat.executeUpdate();
+   }
+   
+   public void saveBoard(Integer gameid, ChessBoard board) throws SQLException{
+   
+        String query =  "INSERT INTO gamepieces(gameid_unfinishedgameid, type, coordi, coordj) VALUES(?, ?, ?, ?)";
+        Object[][] bd = board.getChessboard();
+        
+        prepstat = conn.prepareStatement(query);
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+               
+                if(bd[i][j] != null){    
+                    prepstat.setInt(1, gameid);
+                    prepstat.setString(2, bd[i][j].toString());
+                    prepstat.setInt(3, i);
+                    prepstat.setInt(4, j);
+                    prepstat.addBatch();
+                }
+            }
+        }
+        prepstat.executeBatch(); 
+   }
     
    public void saveGame(Integer whiteid, Integer blackid, Integer currentturn, String startdate, ChessBoard board) throws SQLException{ //untested
    
+       
         /*conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = "INSERT INTO unfinishedgames(white_userid, black_userid, currentturn_userid, gamestartdate) VALUES(?, ?, ?, ?)";
         
@@ -137,7 +190,7 @@ public class Database {
         
         /////////////////////////////
         
-        String query = "Select unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
+        /*String query = "Select unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
         prepstat = conn.prepareStatement(query);
         
         prepstat.setInt(1, whiteid);
@@ -149,10 +202,12 @@ public class Database {
         Integer gamedatabaseid = 0;
         while(rs.next()){
             gamedatabaseid = rs.getInt("unfinishedgamesid");
-        }
+        }*/
         
+        Integer gamedatabaseid = getExactGameId(whiteid, blackid, startdate);
+       
         ////////////////////////////////
-        query =  "INSERT INTO gamepieces(gameid_unfinishedgameid, type, coordi, coordj) VALUES(?, ?, ?, ?)";
+        /*String query =  "INSERT INTO gamepieces(gameid_unfinishedgameid, type, coordi, coordj) VALUES(?, ?, ?, ?)";
         Object[][] bd = board.getChessboard();
         
         prepstat = conn.prepareStatement(query);
@@ -168,8 +223,9 @@ public class Database {
                 }
             }
         }
-        prepstat.executeBatch();   
-   
+        prepstat.executeBatch();  */
+        
+        this.saveBoard(gamedatabaseid, board);
    }
    
    public List<String> getUsersGameList(Integer userid) throws SQLException{
@@ -283,10 +339,10 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
        rs = prepstat.executeQuery();
    
        while(rs.next()){
-           return true;
+           return false;
        }
        
-       return false;
+       return true;
    }
    
 }

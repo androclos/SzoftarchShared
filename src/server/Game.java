@@ -6,10 +6,7 @@ import chess.ChessBoard;
 import client.Message;
 import database.ChessPiece;
 import database.Database;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -284,7 +281,7 @@ public class Game implements Runnable{
                 break;
             }
             case "loadgame":{
-                loadgamefromdatabase(Integer.valueOf(message.get(2)));
+                loadGameFromDatabase(Integer.valueOf(message.get(2)));
                 break;
             }
             
@@ -387,7 +384,7 @@ public class Game implements Runnable{
         this.loadedgame = loadedgame;
     }
     
-    public void loadgamefromdatabase(Integer gameid){ //nincs kesz
+    public void loadGameFromDatabase(Integer gameid){ //nincs kesz
     
         try {
             
@@ -407,11 +404,30 @@ public class Game implements Runnable{
         }
     
     }
+
+    public void saveGameToDatabase(){
     
-    
-    public void savegametodatabse(){
-    
-        
+        try {
+
+            Database db = lobby.getDatabaseAccess();
+            if(db.isNewGame(gameid) == false){
+                
+                db.clearGamePieceList(gameid);
+                db.saveBoard(gameid, board);
+                db.updateGameState(gameid, currentturnplayerid);
+   
+            }
+            else{
+            
+                db.saveGame(userbyname(playercolor.get("white")).getUserid(), userbyname(playercolor.get("black")).getUserid(), currentturnplayerid, gamestarttime, board);
+            
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
     
     }
 
