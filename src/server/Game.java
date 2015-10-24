@@ -53,7 +53,6 @@ public class Game implements Runnable{
         this.gameid = id;
         this.lobby = lob;
         this.loadedgame = loadgame;
-        
 
     }
 
@@ -75,6 +74,32 @@ public class Game implements Runnable{
     
     }
     
+    public void addPlayerToLoadedGame(UserClient newuser){
+    
+        try {
+   
+            
+            if(players.size() < 1){
+                
+                players.add(newuser);
+                Message msg = new Message("message:Waiting for player 2.");
+                sendmessage(newuser.getUserid(), msg);
+                
+            }
+            else{
+                
+                players.add(newuser);
+                Message msg1 = new Message("message:Both player is present, game is started.");
+                Message msg2 = new Message("boardstate:"+board.toString());
+                broadcast(msg1);
+                broadcast(msg2);
+                
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
     
     public synchronized void addplayer(UserClient newuser){
 
@@ -93,7 +118,7 @@ public class Game implements Runnable{
                 if(fixedplayers.containsKey(newuser.getUserid()) == false)
                     fixedplayers.put(newuser.getUserid(),newuser.getUsername());
                     
-                Message msg = new Message("Waiting for player 2.");
+                Message msg = new Message("message:Waiting for player 2.");
                 sendmessage(newuser.getUserid(), msg);
                 
                 System.out.println("Player: "+ this.players.get(0).getUsername() + " joind to game: " + this.gameid + ".");
@@ -169,29 +194,26 @@ public class Game implements Runnable{
             UserClient leavingplayer = this.userbyid(id);
             this.players.remove(this.userbyid(id));
    
-            if(players.size() == 0){
-            
-                System.out.println("save game");
+            if(players.size() == 0 && !board.toString().equals(ChessBoard.defaultboardstate)){ //minden jatekos elment es volt lepes
+
                 this.saveGameToDatabase();
                 return;
             }
-            
-            
-            /*Message m1 = new Message("message:You left the game.");
-            //sendmessage(id, m1); //exception dob ha nincs kliens kapcsolat hirtelen megszakad (nem csak logout) 
 
-            
-            
+            /*if(leavingplayer.getCommthread().stopthread == false){
+                Message m1 = new Message("message:You left the game.");
+                sendmessage(id, m1); //exception dob ha nincs kliens kapcsolat hirtelen megszakad (nem csak logout)  ???
+            }*/
+
             Message m2 = new Message("game:stopped");
             Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game is halted.");
-            for(UserClient u : this.players){
+            for(UserClient u : players){
 
                 sendmessage(u.getUserid(), m2);
                 sendmessage(u.getUserid(), m3);
                 
-            }*/
-            
-            
+            }
+ 
         } catch (Exception ex/*IOException ex*/) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -301,9 +323,6 @@ public class Game implements Runnable{
     
     }
     
-    public void loadgame(){
-
-    }
     
     public void newgameinit() throws IOException{
     
@@ -395,6 +414,8 @@ public class Game implements Runnable{
     public void loadGameFromDatabase(Integer gameid){ //nincs kesz
     
         try {
+
+            playercolor = new HashMap<String,String>();
             
             Database db = lobby.getDatabaseAccess();
             
@@ -402,7 +423,9 @@ public class Game implements Runnable{
             setGameDetails(gamedetails);
             
             List<ChessPiece> pieces = db.loadGame(gameid);
-            board.buildBoard(pieces);
+            board = new ChessBoard(pieces);
+            
+            System.out.println(board.toString());
             
             
         } catch (SQLException ex) {
@@ -447,7 +470,7 @@ public class Game implements Runnable{
         playercolor.put("white",datamap.get("white"));
         currentturnplayerid = Integer.valueOf(datamap.get("currentid"));
         gamestarttime = datamap.get("startdate");
-        gameid = Integer.valueOf(datamap.get("gameid"));
+        //gameid = Integer.valueOf(datamap.get("gameid"));
         
     }
     

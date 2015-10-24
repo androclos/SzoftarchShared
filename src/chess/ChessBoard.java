@@ -165,19 +165,19 @@ public class ChessBoard {
         
             switch(p.getType()){
             
-                case "P":{chessboard[p.getCoordi()][p.getCoordj()] = new Pawn(true);}
-                case "K":{chessboard[p.getCoordi()][p.getCoordj()] = new King(true);}
-                case "N":{chessboard[p.getCoordi()][p.getCoordj()] = new Knight(true);}
-                case "Q":{chessboard[p.getCoordi()][p.getCoordj()] = new Queen(true);}
-                case "R":{chessboard[p.getCoordi()][p.getCoordj()] = new Rook(true);}
-                case "B":{chessboard[p.getCoordi()][p.getCoordj()] = new Bishop(true);}
+                case "P":{chessboard[p.getCoordi()][p.getCoordj()] = new Pawn(true); break;}
+                case "K":{chessboard[p.getCoordi()][p.getCoordj()] = new King(true); break;}
+                case "N":{chessboard[p.getCoordi()][p.getCoordj()] = new Knight(true); break;}
+                case "Q":{chessboard[p.getCoordi()][p.getCoordj()] = new Queen(true); break;}
+                case "R":{chessboard[p.getCoordi()][p.getCoordj()] = new Rook(true); break;}
+                case "B":{chessboard[p.getCoordi()][p.getCoordj()] = new Bishop(true); break;}
                 
-                case "p":{chessboard[p.getCoordi()][p.getCoordj()] = new Pawn(false);}
-                case "k":{chessboard[p.getCoordi()][p.getCoordj()] = new King(false);}
-                case "n":{chessboard[p.getCoordi()][p.getCoordj()] = new Knight(false);}
-                case "q":{chessboard[p.getCoordi()][p.getCoordj()] = new Queen(false);}
-                case "r":{chessboard[p.getCoordi()][p.getCoordj()] = new Rook(false);}
-                case "b":{chessboard[p.getCoordi()][p.getCoordj()] = new Bishop(false);}
+                case "p":{chessboard[p.getCoordi()][p.getCoordj()] = new Pawn(false); break;}
+                case "k":{chessboard[p.getCoordi()][p.getCoordj()] = new King(false); break;}
+                case "n":{chessboard[p.getCoordi()][p.getCoordj()] = new Knight(false); break;}
+                case "q":{chessboard[p.getCoordi()][p.getCoordj()] = new Queen(false); break;}
+                case "r":{chessboard[p.getCoordi()][p.getCoordj()] = new Rook(false); break;}
+                case "b":{chessboard[p.getCoordi()][p.getCoordj()] = new Bishop(false); break;}
             
             }
 

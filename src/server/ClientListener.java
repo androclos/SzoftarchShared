@@ -53,6 +53,7 @@ public class ClientListener implements Runnable{ //csak hallgat az adott porton 
             }   
         } 
         catch (IOException ex) {
+            stopthread = true;
             Message poisonpill = new Message(this.clientid+":"+"closeclient");
             que.add(poisonpill);
             Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);

@@ -179,12 +179,14 @@ public class Lobby implements Runnable{
                 this.startnewgame(clientid);
                 break;
             }
-            case "getgamelist":{
-                break;
-            }
             case "joingame":{
                 Integer gametojonid = Integer.valueOf(message.get(2));
                 this.joingame(clientid, gametojonid);
+                break;
+            }
+            case "loadgame":{
+                Integer gametojonid = Integer.valueOf(message.get(2));
+                startnewloadedgame(clientid, gametojonid, original);
                 break;
             }
             case "move":{
@@ -229,9 +231,26 @@ public class Lobby implements Runnable{
     
     }
     
+    public void startnewloadedgame(Integer clientid, Integer gameid, Message original){
+    
+        ArrayBlockingQueue<Message> newgameque = new ArrayBlockingQueue<Message>(100);
+        Game newgame = new Game(newgameque,gameid,this,true);
+        new Thread(newgame).start();
+        newgame.addmessage(original);
+
+        newgame.addPlayerToLoadedGame(loggedinuserclients.get(clientid));
+        this.gamelist.put(gameids, newgame);
+        this.gamequelist.put(gameids, newgameque);
+        this.usertogame.put(clientid, newgame);
+
+    }
+    
     public void joingame(Integer clientid, Integer gameid){
     
-        this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
+        if(gamelist.get(gameid).isLoadedgame() == false)
+            this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
+        else
+            this.gamelist.get(gameid).addPlayerToLoadedGame(this.loggedinuserclients.get(clientid));
         this.usertogame.put(clientid, this.gamelist.get(gameid));
     
     }
@@ -282,11 +301,10 @@ public class Lobby implements Runnable{
         this.usertogame.remove(id);
     }
 
-    public void sendGameList(Integer id){
+    public void sendGameList(Integer id){ //adatbazisbol vissza adja azokat a jatekokat amik lehet hogy be vannak toltve
     
         try {
             ArrayList<String> listofgames = new ArrayList<String>();
-            String user = this.loggedinuserclients.get(id).getUsername();
 
             for (Map.Entry<Integer, Game> entry : this.gamelist.entrySet()){
 
