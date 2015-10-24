@@ -5,6 +5,7 @@ import chess.Cell;
 import chess.ChessBoard;
 import client.Message;
 import database.ChessPiece;
+import database.Database;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -81,9 +82,7 @@ public class Game implements Runnable{
     public synchronized void addplayer(UserClient newuser){
 
         try{
-        
-            
-            
+
             if(players.size() <1){
                 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -127,7 +126,6 @@ public class Game implements Runnable{
         }catch (Exception ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
     
     public synchronized Integer numberofplayers(){
@@ -286,7 +284,7 @@ public class Game implements Runnable{
                 break;
             }
             case "loadgame":{
-                loadgame(Integer.valueOf(message.get(2)));
+                loadgamefromdatabase(Integer.valueOf(message.get(2)));
                 break;
             }
             
@@ -342,7 +340,6 @@ public class Game implements Runnable{
                 Message notyourturn = new Message("message:Not your turn.");
                 sendmessage(id, notyourturn);
                 return;
-
             }
             
             Integer outcome = board.move(src, dest, true);
@@ -390,10 +387,16 @@ public class Game implements Runnable{
         this.loadedgame = loadedgame;
     }
     
-    public void loadgame(Integer id){ //nincs kesz
+    public void loadgamefromdatabase(Integer gameid){ //nincs kesz
     
         try {
-            List<ChessPiece> pieces = lobby.getDatabaseAccess().loadGame(id);
+            
+            Database db = lobby.getDatabaseAccess();
+            
+            Map<String,String> gamedetails = db.getGameInformation(gameid);
+            setGameDetails(gamedetails);
+            
+            List<ChessPiece> pieces = db.loadGame(gameid);
             board.buildBoard(pieces);
             
             
@@ -412,4 +415,15 @@ public class Game implements Runnable{
     
     }
 
+    public void setGameDetails(Map<String,String> datamap){
+
+        fixedplayers.put(Integer.valueOf(datamap.get("blackid")), datamap.get("black"));
+        fixedplayers.put(Integer.valueOf(datamap.get("whiteid")), datamap.get("white"));
+        playercolor.put("black",datamap.get("black"));
+        playercolor.put("white",datamap.get("white"));
+        currentturnplayerid = Integer.valueOf(datamap.get("currentid"));
+        gamestarttime = datamap.get("startdate");
+        gameid = Integer.valueOf(datamap.get("gameid"));
+        
+    }
 }
