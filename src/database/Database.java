@@ -102,7 +102,7 @@ public class Database {
    public void addNewGame(Integer whiteid, Integer blackid, Integer currentturn, String startdate, ChessBoard board) throws SQLException{
    
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        String query = "INSERT INTO unfinishedgames(white_userid, black_userid, currentturn_userid, gamestartdate) VALUES(?, ?, ?, ?)";
+        String query = "INSERT INTO unfinishedgames(white_userid, black_userid, currentturn_userid, startdate) VALUES(?, ?, ?, ?)";
         
         prepstat = conn.prepareStatement(query);
         prepstat.setInt(1, whiteid);
@@ -115,7 +115,7 @@ public class Database {
    
    public Integer getExactGameId(Integer whiteid, Integer blackid, String startdate) throws SQLException{
 
-        String query = "SELECT unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND gamestartdate=?";
+        String query = "SELECT unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND startdate=?";
         prepstat = conn.prepareStatement(query);
         
         prepstat.setInt(1, whiteid);
@@ -153,7 +153,7 @@ public class Database {
    
    public void saveBoard(Integer gameid, ChessBoard board) throws SQLException{
    
-        String query =  "INSERT INTO gamepieces(gameid_unfinishedgameid, type, coordi, coordj) VALUES(?, ?, ?, ?)";
+        String query =  "INSERT INTO gamepieces(gameid_unfinishedgamesid, type, coordinatei, coordinatej) VALUES(?, ?, ?, ?)";
         Object[][] bd = board.getChessboard();
         
         prepstat = conn.prepareStatement(query);

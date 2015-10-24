@@ -193,8 +193,9 @@ public class Lobby implements Runnable{
             }
             
             case "leavegame":{
-                this.leavegame(clientid);
                 usertogame.get(clientid).addmessage(original);
+                this.leavegame(clientid);
+                //usertogame.get(clientid).addmessage(original);
                 break;
             }
             case "gamelist":{
@@ -276,12 +277,9 @@ public class Lobby implements Runnable{
     }
     
     public void leavegame(Integer id){
-    
-        
-        this.usertogame.get(id).playerleaving(id);
+
+        //this.usertogame.get(id).playerleaving(id);
         this.usertogame.remove(id);
-    
-    
     }
 
     public void sendGameList(Integer id){

@@ -164,14 +164,23 @@ public class Game implements Runnable{
     public void playerleaving(Integer id){
     
         try {
-  
+            
             this.gamehalted = true;
             UserClient leavingplayer = this.userbyid(id);
+            this.players.remove(this.userbyid(id));
+   
+            if(players.size() == 0){
             
-            Message m1 = new Message("message:You left the game.");
+                System.out.println("save game");
+                this.saveGameToDatabase();
+                return;
+            }
+            
+            
+            /*Message m1 = new Message("message:You left the game.");
             //sendmessage(id, m1); //exception dob ha nincs kliens kapcsolat hirtelen megszakad (nem csak logout) 
 
-            this.players.remove(this.userbyid(id));
+            
             
             Message m2 = new Message("game:stopped");
             Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game is halted.");
@@ -180,10 +189,10 @@ public class Game implements Runnable{
                 sendmessage(u.getUserid(), m2);
                 sendmessage(u.getUserid(), m3);
                 
-            }
+            }*/
             
             
-        } catch (IOException ex) {
+        } catch (Exception ex/*IOException ex*/) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -200,7 +209,6 @@ public class Game implements Runnable{
         }
         
         return player;
-    
     }
     
     public UserClient userbyname(String name){
@@ -273,11 +281,11 @@ public class Game implements Runnable{
                 break;
             }
             case "leavegame":{
-                playerleaving(gameid);
+                playerleaving(clientid);
                 break;
             }
             case "logout":{
-                playerleaving(gameid);
+                playerleaving(clientid);
                 break;
             }
             case "loadgame":{
@@ -419,7 +427,7 @@ public class Game implements Runnable{
             }
             else{
             
-                db.saveGame(userbyname(playercolor.get("white")).getUserid(), userbyname(playercolor.get("black")).getUserid(), currentturnplayerid, gamestarttime, board);
+                db.saveGame(getFixedPlayerId(playercolor.get("white")), getFixedPlayerId(playercolor.get("black")), currentturnplayerid, gamestarttime, board);
             
             }
             
@@ -441,5 +449,17 @@ public class Game implements Runnable{
         gamestarttime = datamap.get("startdate");
         gameid = Integer.valueOf(datamap.get("gameid"));
         
+    }
+    
+    public Integer getFixedPlayerId(String username){
+    
+        Integer id = -1;
+        for (Map.Entry<Integer, String> entry : this.fixedplayers.entrySet()){
+            
+            if(entry.getValue().equals(username))
+                id = entry.getKey();
+        
+        }
+        return id;
     }
 }
