@@ -171,8 +171,11 @@ public class Game implements Runnable{
             try {
 
                 Message newmsg = this.gamemessageque.take();
+                
+                if(newmsg.getMessage().equals("stopgame"))
+                    return;
+                
                 System.out.println("Game message: "+newmsg.getMessage());
-
                 List<String> message = msgprocess(newmsg);
                 msghandler(message);
 
@@ -194,6 +197,7 @@ public class Game implements Runnable{
             if(players.size() == 0/* && !board.toString().equals(ChessBoard.defaultboardstate)*/){ //minden jatekos elment es volt lepes
 
                 this.saveGameToDatabase();
+                addmessage(new Message("stopgame"));
                 return;
             }
 
