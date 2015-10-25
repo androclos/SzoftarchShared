@@ -16,7 +16,9 @@ public class ServerMain {
     public static void main(String[] args) {   
     
     Server server = new Server(2222);
+        System.out.println("<><><><><><><><>Server started.<><><><><><><><>");
     new Thread(server).start();
+    
 
         
     }

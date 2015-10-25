@@ -42,6 +42,7 @@ public class Game implements Runnable{
     private boolean gamestrated = false;
     private boolean gamehalted = false;
     private boolean loadedgame = false;
+    private boolean movedone = false;
     private ArrayBlockingQueue<Message> gamemessageque;
     private Lobby lobby;
     private ChessBoard board;
@@ -87,12 +88,20 @@ public class Game implements Runnable{
                 
             }
             else{
-                
+
                 players.add(newuser);
                 Message msg1 = new Message("message:Both player is present, game is started.");
-                Message msg2 = new Message("boardstate:"+board.toString());
+                Message msgboard = new Message("boardstate:"+board.toString());
+                Message msgwhite= new Message("color:white");
+                Message msgblack= new Message("color:black");
+                Message msgcurrentturn= new Message("game:turn:"+currentturnplayerid);
+                
+                sendmessage(getFixedPlayerId(playercolor.get("white")), msgwhite);
+                sendmessage(getFixedPlayerId(playercolor.get("black")), msgblack);
+
+                broadcast(msgcurrentturn);
+                broadcast(msgboard);
                 broadcast(msg1);
-                broadcast(msg2);
                 
             }
         } catch (IOException ex) {
@@ -105,6 +114,13 @@ public class Game implements Runnable{
 
         try{
 
+            if(loadedgame == true){
+                
+                addPlayerToLoadedGame(newuser);
+                return;
+            
+            }
+            
             if(players.size() <1){
                 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -175,7 +191,7 @@ public class Game implements Runnable{
             UserClient leavingplayer = this.userbyid(id);
             this.players.remove(this.userbyid(id));
    
-            if(players.size() == 0 && !board.toString().equals(ChessBoard.defaultboardstate)){ //minden jatekos elment es volt lepes
+            if(players.size() == 0/* && !board.toString().equals(ChessBoard.defaultboardstate)*/){ //minden jatekos elment es volt lepes
 
                 this.saveGameToDatabase();
                 return;
@@ -340,7 +356,8 @@ public class Game implements Runnable{
             Integer outcome = board.move(src, dest, true);
             
             if(outcome == 1){
-            
+                
+                movedone = true;
                 for(Integer i : fixedplayers.keySet()){
                 
                     if(!i.equals(id))

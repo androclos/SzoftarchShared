@@ -237,7 +237,7 @@ public class Lobby implements Runnable{
         new Thread(newgame).start();
         newgame.addmessage(original);
 
-        newgame.addPlayerToLoadedGame(loggedinuserclients.get(clientid));
+        newgame.addplayer(loggedinuserclients.get(clientid));
         this.gamelist.put(gameids, newgame);
         this.gamequelist.put(gameids, newgameque);
         this.usertogame.put(clientid, newgame);
@@ -246,10 +246,7 @@ public class Lobby implements Runnable{
     
     public void joingame(Integer clientid, Integer gameid){
     
-        if(gamelist.get(gameid).isLoadedgame() == false)
-            this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
-        else
-            this.gamelist.get(gameid).addPlayerToLoadedGame(this.loggedinuserclients.get(clientid));
+        this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
         this.usertogame.put(clientid, this.gamelist.get(gameid));
     
     }

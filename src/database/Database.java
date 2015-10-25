@@ -116,6 +116,7 @@ public class Database {
    
    public Integer getExactGameId(Integer whiteid, Integer blackid, String startdate) throws SQLException{
 
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = "SELECT unfinishedgamesid FROM unfinishedgames WHERE white_userid = ? AND black_userid = ? AND startdate=?";
         prepstat = conn.prepareStatement(query);
         
@@ -129,12 +130,13 @@ public class Database {
         while(rs.next()){
             gamedatabaseid = rs.getInt("unfinishedgamesid");
         }
-        
+        closeConnection();
         return gamedatabaseid;
    }
    
    public void updateGameState(Integer gameid, Integer currentplayer) throws SQLException{
    
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = " UPDATE unfinishedgames SET currentturn_userid = ? WHERE unfinishedgamesid = ?";
         prepstat = conn.prepareStatement(query);
         
@@ -146,6 +148,7 @@ public class Database {
    
    public void clearGamePieceList(Integer gameid) throws SQLException{
    
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query = "DELETE FROM gamepieces WHERE gameid_unfinishedgamesid = ?";
         prepstat = conn.prepareStatement(query);
         
@@ -156,6 +159,7 @@ public class Database {
    
    public void saveBoard(Integer gameid, ChessBoard board) throws SQLException{
    
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
         String query =  "INSERT INTO gamepieces(gameid_unfinishedgamesid, type, coordinatei, coordinatej) VALUES(?, ?, ?, ?)";
         Object[][] bd = board.getChessboard();
         
@@ -195,6 +199,7 @@ LEFT JOIN chess_db.user o2 ON o1.black_userid = o2.userid
 LEFT JOIN chess_db.user o3 ON o1.white_userid = o3.userid
 LEFT JOIN chess_db.user o4 ON o1.currentturn_userid = o4.userid
 WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
        
         List<String> games = new ArrayList<String>();
         Map<Integer,String> gamelist = new HashMap<Integer, String>();
@@ -215,11 +220,9 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         rs = prepstat.executeQuery();
         while(rs.next()){
             String s = rs.getInt("gameid")+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getString("date");
-            //games.add(s);
             gamelist.put(rs.getInt("gameid"), s);
         }
         closeConnection();
-       // return games;
         return gamelist;
    }
    
@@ -267,6 +270,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
    
    public List<ChessPiece> loadGame(Integer gameid) throws SQLException{
    
+       conn = DriverManager.getConnection(DB_URL, USER, PASS);
        List<ChessPiece> pieces = new ArrayList<ChessPiece>();
        
        String query = "Select * FROM gamepieces WHERE gameid_unfinishedgamesid = ?";
@@ -286,6 +290,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
     
    public Integer getMaxGameId() throws SQLException{
    
+       conn = DriverManager.getConnection(DB_URL, USER, PASS);
        String query = "Select MAX(unfinishedgamesid) FROM unfinishedgames";
        conn = DriverManager.getConnection(DB_URL, USER, PASS);
        
@@ -303,6 +308,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
    
    public boolean isNewGame(Integer gameid) throws SQLException{
    
+       conn = DriverManager.getConnection(DB_URL, USER, PASS);
        String query = "Select unfinishedgamesid FROM unfinishedgames WHERE unfinishedgamesid = ?";
        conn = DriverManager.getConnection(DB_URL, USER, PASS);
        
