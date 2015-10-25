@@ -263,12 +263,12 @@ public class Lobby implements Runnable{
 
     }
     
-    public void closeclient(Integer id){
+    public void closeclient(Integer clientid){
     
-        logout(id);
-        userclients.get(id).getCommthread().stopThread();
-        userclients.remove(id);
-        System.out.println("Client: "+id+" ,closed the connection.");
+        logout(clientid);
+        userclients.get(clientid).getCommthread().stopThread();
+        userclients.remove(clientid);
+        System.out.println("Client: "+clientid+" ,closed the connection.");
 
     }
     
@@ -296,21 +296,23 @@ public class Lobby implements Runnable{
         this.usertogame.remove(id);
     }
 
-    public void sendGameList(Integer id){ //adatbazisbol vissza adja azokat a jatekokat amik lehet hogy be vannak toltve
+    public void sendGameList(Integer clientid){ //adatbazisbol vissza adja azokat a jatekokat amik lehet hogy be vannak toltve
     
         try {
+            
+            Integer userid = loggedinuserclients.get(clientid).getLoggedinuser().getUserid(); //user ideja nem a cliense
             
             ArrayList<String> listofongoinggames = new ArrayList<String>();
             ArrayList<Integer> ongoinggameids = new ArrayList<Integer>();
             for (Map.Entry<Integer, Game> entry : this.gamelist.entrySet()){
 
-                if(entry.getValue().ableToJoin(id)){
-                    listofongoinggames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(id));
+                if(entry.getValue().ableToJoin(userid)){
+                    listofongoinggames.add(entry.getValue().getGameid()+":"+entry.getValue().getotherplayer(userid));
                     ongoinggameids.add(entry.getValue().getGameid());
                 }
             }
 
-            Map<Integer, String> listofloadablegames = db.getUsersGameList(id);
+            Map<Integer, String> listofloadablegames = db.getUsersGameList(userid);
             
             /*for(String s : listofloadablegames)
                 listofongoinggames.add(s);*/
@@ -322,10 +324,10 @@ public class Lobby implements Runnable{
                 }
             }
 
-            Message m = new Message("Game list.");
+            Message m = new Message("message:Game list.");
             m.setIsgamelist(true);
             m.setGamelist(listofongoinggames);
-            this.loggedinuserclients.get(id).getOutputStream().writeObject(m);
+            this.loggedinuserclients.get(clientid).getOutputStream().writeObject(m);
             
         } catch (IOException ex) {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);

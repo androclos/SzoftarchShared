@@ -34,10 +34,11 @@ public class Game implements Runnable{
     
     private List<UserClient> players = new ArrayList<UserClient>(); //jatekvban levo jatekosok
     private List<String> fixedplayernames = new ArrayList<String>(); // egyszer mar csatalkozott jatekosok
-    private Map<Integer,String> fixedplayers = new HashMap<Integer,String>(); // egyszer mar csatalkozott jatekosok
+    private Map<Integer,String> fixedplayers = new HashMap<Integer,String>(); // egyszer mar csatalkozott jatekosok, userid
     private Map<String,String> playercolor;
     //private String currentturn;
-    private Integer currentturnplayerid;
+    private Integer currentturnclientid; //aktualis jatekos cliensid-je nem userid
+    private Integer currentturnuserid = -1;
     private Integer gameid; 
     private boolean gamestrated = false;
     private boolean gamehalted = false;
@@ -90,14 +91,20 @@ public class Game implements Runnable{
             else{
 
                 players.add(newuser);
+                for(UserClient u: players){
+        
+                    if(u.getLoggedinuser().getUserid().equals(currentturnuserid))
+                    currentturnclientid = u.getUserid();
+        
+                }
                 Message msg1 = new Message("message:Both player is present, game is started.");
                 Message msgboard = new Message("boardstate:"+board.toString());
                 Message msgwhite= new Message("color:white");
                 Message msgblack= new Message("color:black");
-                Message msgcurrentturn= new Message("game:turn:"+currentturnplayerid);
+                Message msgcurrentturn= new Message("game:turn:"+currentturnclientid);
                 
-                sendmessage(getFixedPlayerId(playercolor.get("white")), msgwhite);
-                sendmessage(getFixedPlayerId(playercolor.get("black")), msgblack);
+                sendmessage(userbyname(playercolor.get("white")).getUserid(), msgwhite);
+                sendmessage(userbyname(playercolor.get("black")).getUserid(), msgblack);
 
                 broadcast(msgcurrentturn);
                 broadcast(msgboard);
@@ -128,8 +135,10 @@ public class Game implements Runnable{
                 
                 
                 players.add(newuser);
-                if(fixedplayers.containsKey(newuser.getUserid()) == false)
-                    fixedplayers.put(newuser.getUserid(),newuser.getUsername());
+                //if(fixedplayers.containsKey(newuser.getUserid()) == false)
+                if(fixedplayers.containsKey(newuser.getLoggedinuser().getUserid()) == false)
+                    //fixedplayers.put(newuser.getUserid(),newuser.getUsername());
+                    fixedplayers.put(newuser.getLoggedinuser().getUserid(),newuser.getUsername());
                     
                 Message msg = new Message("message:Waiting for player 2.");
                 sendmessage(newuser.getUserid(), msg);
@@ -142,8 +151,10 @@ public class Game implements Runnable{
             else{
                 
                 players.add(newuser);       
-                if(fixedplayers.containsKey(newuser.getUserid()) == false)
-                    fixedplayers.put(newuser.getUserid(),newuser.getUsername());
+                //if(fixedplayers.containsKey(newuser.getUserid()) == false)
+                if(fixedplayers.containsKey(newuser.getLoggedinuser().getUserid()) == false)
+                    //fixedplayers.put(newuser.getUserid(),newuser.getUsername());
+                    fixedplayers.put(newuser.getLoggedinuser().getUserid(),newuser.getUsername());
                 
                 this.gamestrated = true;
                 
@@ -186,13 +197,13 @@ public class Game implements Runnable{
         
     }
     
-    public void playerleaving(Integer id){
+    public void playerleaving(Integer clientid){
     
         try {
             
             this.gamehalted = true;
-            UserClient leavingplayer = this.userbyid(id);
-            this.players.remove(this.userbyid(id));
+            UserClient leavingplayer = this.userbyid(clientid);
+            this.players.remove(this.userbyid(clientid));
    
             if(players.size() == 0/* && !board.toString().equals(ChessBoard.defaultboardstate)*/){ //minden jatekos elment es volt lepes
 
@@ -221,12 +232,12 @@ public class Game implements Runnable{
         
     }
     
-    public UserClient userbyid(Integer id){
+    public UserClient userbyid(Integer clientid){
     
         UserClient player = null;
         for(UserClient u : this.players){
         
-            if(u.getUserid().equals(id))
+            if(u.getUserid().equals(clientid))
                 player = u;
             
         }
@@ -248,17 +259,17 @@ public class Game implements Runnable{
     
     }
     
-    public boolean ableToJoin(Integer id){
+    public boolean ableToJoin(Integer userid){ //?? nem biztos hogy jo
 
-        return fixedplayers.containsKey(id) || (this.players.size()== 1 && fixedplayers.size() == 1);
+        return fixedplayers.containsKey(userid) || (this.players.size()== 1 && fixedplayers.size() == 1);
     }
     
-    public String getotherplayer(Integer id){
+    public String getotherplayer(Integer userid){
         
         String username = "";
         for (Map.Entry<Integer, String> entry : this.fixedplayers.entrySet()){
             
-            if(!entry.getKey().equals(id))
+            if(!entry.getKey().equals(userid))
                 username = entry.getValue();
         
         }
@@ -292,6 +303,7 @@ public class Game implements Runnable{
                 Cell src = new Cell(Integer.valueOf(message.get(2)),Integer.valueOf(message.get(3)));
                 Cell dest = new Cell(Integer.valueOf(message.get(4)),Integer.valueOf(message.get(5)));
                 move(clientid,src,dest);
+                //move(userbyid(clientid).getLoggedinuser().getUserid(),src,dest);
                 break;
             }
             case "leavegame":{
@@ -326,14 +338,16 @@ public class Game implements Runnable{
         
             playercolor.put("white", players.get(0).getUsername());
             playercolor.put("black", players.get(1).getUsername());
-            currentturnplayerid = players.get(0).getUserid();
+            currentturnclientid = players.get(0).getUserid();
+            currentturnuserid = players.get(0).getLoggedinuser().getUserid();
         
         }
         else{
         
             playercolor.put("white", players.get(1).getUsername());
             playercolor.put("black", players.get(0).getUsername());
-            currentturnplayerid = players.get(1).getUserid();
+            currentturnclientid = players.get(1).getUserid();
+            currentturnuserid = players.get(1).getLoggedinuser().getUserid();
             
         }
         
@@ -347,13 +361,13 @@ public class Game implements Runnable{
         
     }
     
-    public void move(Integer id,Cell src, Cell dest){
+    public void move(Integer clientid,Cell src, Cell dest){
     
         try{
             
-            if(id != currentturnplayerid){
+            if(clientid != currentturnclientid){
                 Message notyourturn = new Message("message:Not your turn.");
-                sendmessage(id, notyourturn);
+                sendmessage(clientid, notyourturn);
                 return;
             }
             
@@ -362,12 +376,21 @@ public class Game implements Runnable{
             if(outcome == 1){
                 
                 movedone = true;
-                for(Integer i : fixedplayers.keySet()){
+                /*for(Integer i : fixedplayers.keySet()){
                 
                     if(!i.equals(id))
                         currentturnplayerid = i;
                 
+                }*/
+                
+                for(UserClient client : players){
+                
+                    if(!client.getUserid().equals(clientid))
+                        currentturnclientid = client.getUserid();
+                        currentturnuserid = client.getLoggedinuser().getUserid();
+                
                 }
+                
                 Message succesfulmove = new Message("move:"+src.toString()+":"+dest.toString());
                 broadcast(succesfulmove);
             
@@ -375,7 +398,7 @@ public class Game implements Runnable{
             else{
         
                 Message wrongmove = new Message("message:Invalid move.");
-                sendmessage(id, wrongmove);
+                sendmessage(clientid, wrongmove);
 
             }
             
@@ -436,13 +459,14 @@ public class Game implements Runnable{
                 
                 db.clearGamePieceList(gameid);
                 db.saveBoard(gameid, board);
-                db.updateGameState(gameid, currentturnplayerid);
+                //db.updateGameState(gameid, currentturnclientid);
+                db.updateGameState(gameid, currentturnuserid);
    
             }
             else{
             
-                db.saveGame(getFixedPlayerId(playercolor.get("white")), getFixedPlayerId(playercolor.get("black")), currentturnplayerid, gamestarttime, board);
-            
+                //db.saveGame(getFixedPlayerId(playercolor.get("white")), getFixedPlayerId(playercolor.get("black")), currentturnclientid, gamestarttime, board);
+                db.saveGame(getFixedPlayerId(playercolor.get("white")), getFixedPlayerId(playercolor.get("black")), currentturnuserid, gamestarttime, board);
             }
             
         } catch (IOException ex) {
@@ -459,9 +483,19 @@ public class Game implements Runnable{
         fixedplayers.put(Integer.valueOf(datamap.get("whiteid")), datamap.get("white"));
         playercolor.put("black",datamap.get("black"));
         playercolor.put("white",datamap.get("white"));
-        currentturnplayerid = Integer.valueOf(datamap.get("currentid"));
+        //currentturnclientid = Integer.valueOf(datamap.get("currentid"));
         gamestarttime = datamap.get("startdate");
         //gameid = Integer.valueOf(datamap.get("gameid"));
+        
+
+        currentturnuserid = Integer.valueOf(datamap.get("currentid"));
+        
+        for(UserClient u: players){
+        
+            if(u.getLoggedinuser().getUserid().equals(currentturnuserid))
+                currentturnclientid = u.getUserid();
+        
+        }
         
     }
     
