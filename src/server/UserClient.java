@@ -23,7 +23,7 @@ import javax.net.ssl.SSLSocket;
  */
 public class UserClient {
     
-    private Integer userid = -1;
+    private Integer clientid = -1;
     private String username;
     private SSLSocket clientsocket;
     private ClientListener commthread;
@@ -32,9 +32,9 @@ public class UserClient {
     
     ObjectOutputStream o;
 
-    public UserClient(Integer userid, String username, SSLSocket clientsocket,ClientListener comthread) throws IOException {
+    public UserClient(Integer clientid, String username, SSLSocket clientsocket,ClientListener comthread) throws IOException {
 
-            this.userid = userid;
+            this.clientid = clientid;
             this.username = username;
             this.clientsocket = clientsocket;
             this.commthread = comthread;
@@ -46,8 +46,8 @@ public class UserClient {
         return o;
     }
     
-    public Integer getUserid() {
-        return userid;
+    public Integer getClientId() {
+        return clientid;
     }
 
     public String getUsername() {

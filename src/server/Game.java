@@ -67,7 +67,7 @@ public class Game implements Runnable{
         for(UserClient u : players){
         
             try {
-                sendmessage(u.getUserid(), m);
+                sendmessage(u.getClientId(), m);
             } catch (IOException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -85,7 +85,7 @@ public class Game implements Runnable{
                 
                 players.add(newuser);
                 Message msg = new Message("message:Waiting for player 2.");
-                sendmessage(newuser.getUserid(), msg);
+                sendmessage(newuser.getClientId(), msg);
                 
             }
             else{
@@ -94,7 +94,7 @@ public class Game implements Runnable{
                 for(UserClient u: players){
         
                     if(u.getLoggedinuser().getUserid().equals(currentturnuserid))
-                    currentturnclientid = u.getUserid();
+                    currentturnclientid = u.getClientId();
         
                 }
                 Message msg1 = new Message("message:Both player is present, game is started.");
@@ -103,8 +103,8 @@ public class Game implements Runnable{
                 Message msgblack= new Message("color:black");
                 Message msgcurrentturn= new Message("game:turn:"+currentturnclientid);
                 
-                sendmessage(userbyname(playercolor.get("white")).getUserid(), msgwhite);
-                sendmessage(userbyname(playercolor.get("black")).getUserid(), msgblack);
+                sendmessage(userbyname(playercolor.get("white")).getClientId(), msgwhite);
+                sendmessage(userbyname(playercolor.get("black")).getClientId(), msgblack);
 
                 broadcast(msgcurrentturn);
                 broadcast(msgboard);
@@ -141,7 +141,7 @@ public class Game implements Runnable{
                     fixedplayers.put(newuser.getLoggedinuser().getUserid(),newuser.getUsername());
                     
                 Message msg = new Message("message:Waiting for player 2.");
-                sendmessage(newuser.getUserid(), msg);
+                sendmessage(newuser.getClientId(), msg);
                 
                 System.out.println("Player: "+ this.players.get(0).getUsername() + " joind to game: " + this.gameid + ".");
                 System.out.println("New game with id: "+this.gameid+", started by: "+this.players.get(0).getUsername()+ ".");
@@ -221,8 +221,8 @@ public class Game implements Runnable{
             Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game is halted.");
             for(UserClient u : players){
 
-                sendmessage(u.getUserid(), m2);
-                sendmessage(u.getUserid(), m3);
+                sendmessage(u.getClientId(), m2);
+                sendmessage(u.getClientId(), m3);
                 
             }
  
@@ -237,7 +237,7 @@ public class Game implements Runnable{
         UserClient player = null;
         for(UserClient u : this.players){
         
-            if(u.getUserid().equals(clientid))
+            if(u.getClientId().equals(clientid))
                 player = u;
             
         }
@@ -338,7 +338,7 @@ public class Game implements Runnable{
         
             playercolor.put("white", players.get(0).getUsername());
             playercolor.put("black", players.get(1).getUsername());
-            currentturnclientid = players.get(0).getUserid();
+            currentturnclientid = players.get(0).getClientId();
             currentturnuserid = players.get(0).getLoggedinuser().getUserid();
         
         }
@@ -346,7 +346,7 @@ public class Game implements Runnable{
         
             playercolor.put("white", players.get(1).getUsername());
             playercolor.put("black", players.get(0).getUsername());
-            currentturnclientid = players.get(1).getUserid();
+            currentturnclientid = players.get(1).getClientId();
             currentturnuserid = players.get(1).getLoggedinuser().getUserid();
             
         }
@@ -356,8 +356,8 @@ public class Game implements Runnable{
         Message blackcolor = new Message("color:black");
         
         broadcast(gamestarted);
-        sendmessage(userbyname(playercolor.get("black")).getUserid(), blackcolor);
-        sendmessage(userbyname(playercolor.get("white")).getUserid(), whitecolor);
+        sendmessage(userbyname(playercolor.get("black")).getClientId(), blackcolor);
+        sendmessage(userbyname(playercolor.get("white")).getClientId(), whitecolor);
         
     }
     
@@ -385,8 +385,8 @@ public class Game implements Runnable{
                 
                 for(UserClient client : players){
                 
-                    if(!client.getUserid().equals(clientid))
-                        currentturnclientid = client.getUserid();
+                    if(!client.getClientId().equals(clientid))
+                        currentturnclientid = client.getClientId();
                         currentturnuserid = client.getLoggedinuser().getUserid();
                 
                 }
@@ -493,7 +493,7 @@ public class Game implements Runnable{
         for(UserClient u: players){
         
             if(u.getLoggedinuser().getUserid().equals(currentturnuserid))
-                currentturnclientid = u.getUserid();
+                currentturnclientid = u.getClientId();
         
         }
         
