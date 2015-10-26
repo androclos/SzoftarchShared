@@ -50,9 +50,7 @@ public class ENDEcryptorRSA {
         }
     }
 
-    public Key getPublicKey() {
-        return publicKey;
-    }
+
 
     
     public byte[] encryptmessage(String message){
