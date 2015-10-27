@@ -52,7 +52,7 @@ public class Server implements Runnable{
 
             databaseconnection = new Database();
             Endpoint.publish("http://localhost:7777/ws/user", new WebserviceImpl(DatabaseConnectionFactory.GetDatabaseConnection())); // web servcei publish
-            
+
             new Thread(lob).start(); //lobby
             
         } catch (IOException ex) {

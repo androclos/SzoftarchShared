@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class User implements Serializable{
     
+    static final long serialVersionUID = 40L;
+    
     private Integer userid;
     private String name;
 

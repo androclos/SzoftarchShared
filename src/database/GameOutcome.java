@@ -5,11 +5,18 @@
  */
 package database;
 
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Pifko
  */
-public class GameOutcome {
+@XmlRootElement
+public class GameOutcome implements Serializable{
+    
+    static final long serialVersionUID = 42L;
     
     Integer gameid;
     String whiteplayername;
@@ -25,6 +32,31 @@ public class GameOutcome {
         this.enddate = enddate;
     }
 
+    public GameOutcome() {
+    }
+
+    public void setGameid(Integer gameid) {
+        this.gameid = gameid;
+    }
+
+    public void setWhiteplayername(String whiteplayername) {
+        this.whiteplayername = whiteplayername;
+    }
+
+    public void setBlackplayername(String blackplayername) {
+        this.blackplayername = blackplayername;
+    }
+
+    public void setWinnername(String winnername) {
+        this.winnername = winnername;
+    }
+
+    public void setEnddate(String enddate) {
+        this.enddate = enddate;
+    }
+
+    
+    
     public Integer getGameid() {
         return gameid;
     }
