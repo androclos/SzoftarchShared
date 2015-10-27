@@ -267,6 +267,34 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         
    
    }
+    
+   public List<GameOutcome> getGameOutcomes() throws SQLException{
+       
+        List<GameOutcome> resultmap = new ArrayList<GameOutcome>();
+        
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        String query =  "SELECT DISTINCT o1.gameoutcomesid, o2.name as blackplayer,  o3.name as whiteplayer, o4.name as winner, o1.enddate as enddate " +
+                        "FROM gameoutcomes " + 
+                        "JOIN gameoutcomes o1 " +
+                        "LEFT JOIN chess_db.user o2 ON o1.blackuserid_userid = o2.userid " +
+                        "LEFT JOIN chess_db.user o3 ON o1.whiteuserid_userid = o3.userid " +
+                        "LEFT JOIN chess_db.user o4 ON o1.winneruserid_userid = o4.userid ";
+        
+        prepstat = conn.prepareStatement(query);
+        rs = prepstat.executeQuery();
+
+        while(rs.next()){
+            
+            resultmap.add(new GameOutcome(Integer.valueOf(rs.getString("gameoutcomesid")), rs.getString("whiteplayer"), rs.getString("blackplayer"), rs.getString("winner"), rs.getString("enddate")));
+            
+        }
+        
+        
+        closeConnection();
+        return resultmap;
+   
+   
+   }
    
    public List<ChessPiece> loadGame(Integer gameid) throws SQLException{
    

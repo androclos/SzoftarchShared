@@ -51,7 +51,7 @@ public class Server implements Runnable{
             lob = new Lobby(messageque);
 
             databaseconnection = new Database();
-            Endpoint.publish("http://localhost:7777/ws/user", new WebserviceImpl(databaseconnection)); // web servcei publish
+            Endpoint.publish("http://localhost:7777/ws/user", new WebserviceImpl(DatabaseConnectionFactory.GetDatabaseConnection())); // web servcei publish
             
             new Thread(lob).start(); //lobby
             
