@@ -5,6 +5,7 @@
  */
 package webservice;
 
+import database.GameOutcome;
 import database.User;
 import java.sql.SQLException;
 import javax.jws.WebMethod;
@@ -21,5 +22,7 @@ import javax.jws.soap.SOAPBinding.Style;
 public interface WebserviceInterface {
     
     @WebMethod User[] getHelloWorldAsString(String name, String password) throws SQLException;
+    
+    @WebMethod GameOutcome[] getGameOutcomes() throws SQLException;
     
 }

@@ -6,8 +6,10 @@
 package webservice;
 
 import database.Database;
+import database.GameOutcome;
 import database.User;
 import java.sql.SQLException;
+import java.util.List;
 import javax.jws.WebService;
  
 
@@ -41,5 +43,21 @@ public class WebserviceImpl implements WebserviceInterface{
         return list;
 
     }
+
+    @Override
+    public GameOutcome[] getGameOutcomes() throws SQLException {
+        
+        List<GameOutcome> outcomelist = db.getGameOutcomes();
+        
+        GameOutcome[] outcomearray = new GameOutcome[outcomelist.size()];
+        
+        for(int i = 0; i < outcomelist.size(); i++)
+            outcomearray[i] = outcomelist.get(i);
+        
+        return outcomearray;
+        
+    }
+    
+    
     
 }
