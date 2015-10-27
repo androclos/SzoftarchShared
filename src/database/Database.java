@@ -268,7 +268,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
    
    }
     
-   public GameOutcome[] getGameOutcomes() throws SQLException{
+   public List<GameOutcome> getGameOutcomes() throws SQLException{
        
         List<GameOutcome> resultmap = new ArrayList<GameOutcome>();
         
@@ -283,20 +283,15 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         prepstat = conn.prepareStatement(query);
         rs = prepstat.executeQuery();
 
-        GameOutcome[] g = new GameOutcome[3];
-        int i = 0;
-        
         while(rs.next()){ //vissza listava
             
             resultmap.add(new GameOutcome(Integer.valueOf(rs.getString("gameoutcomesid")), rs.getString("whiteplayer"), rs.getString("blackplayer"), rs.getString("winner"), rs.getString("enddate")));
-            g[i] = new GameOutcome(Integer.valueOf(rs.getString("gameoutcomesid")), rs.getString("whiteplayer"), rs.getString("blackplayer"), rs.getString("winner"), rs.getString("enddate"));
-            i++;
+
         }
         
         
         closeConnection();
-        //return resultmap;
-        return g;
+        return resultmap;
    
    }
    

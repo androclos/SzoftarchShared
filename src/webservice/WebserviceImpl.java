@@ -47,19 +47,16 @@ public class WebserviceImpl implements WebserviceInterface{
     @Override
     public GameOutcome[] getGameOutcomes() throws SQLException { //vissza listava
         
-        /*List<GameOutcome> outcomelist = db.getGameOutcomes();
+        List<GameOutcome> outcomelist = db.getGameOutcomes();
         
         GameOutcome[] outcomearray = new GameOutcome[outcomelist.size()];
         
         for(int i = 0; i < outcomelist.size(); i++)
-            outcomearray[i] = new GameOutcome(outcomelist.get(i));
+            outcomearray[i] = outcomelist.get(i);
 
-        return outcomearray;*/
-        /*GameOutcome[] list = (GameOutcome[]) outcomelist.toArray(new GameOutcome[outcomelist.size()]);
-        return list;*/
-        
-        
-        return db.getGameOutcomes();
+        return outcomearray;
+
+
     }
     
     
