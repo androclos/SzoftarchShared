@@ -64,7 +64,8 @@ public class Lobby implements Runnable{
             UserClient newuser = new UserClient(name, null, socket, commthread);
             userclients.put(name, newuser);
 
-            Message namemsg = new Message(String.valueOf(name));
+            //Message namemsg = new Message(String.valueOf(name));
+            Message namemsg = new Message("name:" + String.valueOf(name));
             newuser.getOutputStream().writeObject(namemsg);
 
             System.out.println("Sending name " + name + " to " + socket.toString() + "." );
@@ -119,7 +120,7 @@ public class Lobby implements Runnable{
                 
                 synchronized(loggedinuserclients.get(clientid).getClientsocket().getOutputStream()){
                         
-                    Message newmsg = new Message("Succesful login.");
+                    Message newmsg = new Message("message:Succesful login.");
                     loggedinuserclients.get(clientid).getOutputStream().writeObject(newmsg);
                     System.out.println("Succesful login from: " + clientid +" as " + username +".");
                     
@@ -129,7 +130,7 @@ public class Lobby implements Runnable{
                 
                 synchronized(userclients.get(clientid).getClientsocket().getOutputStream()){
                         
-                    Message newmsg = new Message("Login failed.");
+                    Message newmsg = new Message("message:Login failed.");
                     userclients.get(clientid).getOutputStream().writeObject(newmsg);
                     System.out.println("Failed login from: " + clientid +".");
                 }
