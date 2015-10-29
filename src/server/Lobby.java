@@ -120,8 +120,10 @@ public class Lobby implements Runnable{
                 
                 synchronized(loggedinuserclients.get(clientid).getClientsocket().getOutputStream()){
                         
-                    Message newmsg = new Message("message:Succesful login.");
-                    loggedinuserclients.get(clientid).getOutputStream().writeObject(newmsg);
+                    Message newmsg1 = new Message("message:Succesful login.");
+                    Message newmsg2 = new Message("login:success");
+                    loggedinuserclients.get(clientid).getOutputStream().writeObject(newmsg1);
+                    loggedinuserclients.get(clientid).getOutputStream().writeObject(newmsg2);
                     System.out.println("Succesful login from: " + clientid +" as " + username +".");
                     
                 }
@@ -130,8 +132,10 @@ public class Lobby implements Runnable{
                 
                 synchronized(userclients.get(clientid).getClientsocket().getOutputStream()){
                         
-                    Message newmsg = new Message("message:Login failed.");
-                    userclients.get(clientid).getOutputStream().writeObject(newmsg);
+                    Message newmsg1 = new Message("message:Login failed.");
+                    Message newmsg2 = new Message("login:failure");
+                    userclients.get(clientid).getOutputStream().writeObject(newmsg1);
+                    userclients.get(clientid).getOutputStream().writeObject(newmsg2);
                     System.out.println("Failed login from: " + clientid +".");
                 }
                 
@@ -325,7 +329,7 @@ public class Lobby implements Runnable{
                 }
             }
 
-            Message m = new Message("message:Game list.");
+            Message m = new Message("gamelist:Game list.");
             m.setIsgamelist(true);
             m.setGamelist(listofongoinggames);
             this.loggedinuserclients.get(clientid).getOutputStream().writeObject(m);

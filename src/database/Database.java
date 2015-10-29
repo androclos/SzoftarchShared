@@ -219,7 +219,7 @@ WHERE o1.black_userid = ? OR o1.white_userid = ?;  */ //game tablara  nevek
         
         rs = prepstat.executeQuery();
         while(rs.next()){
-            String s = rs.getInt("gameid")+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getString("date");
+            String s = rs.getInt("gameid")+"-"+"loadgame"+"-"+rs.getString("white")+"-"+rs.getString("black")+"-"+rs.getString("current")+"-"+rs.getString("date");
             gamelist.put(rs.getInt("gameid"), s);
         }
         closeConnection();
