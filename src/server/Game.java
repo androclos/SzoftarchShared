@@ -203,7 +203,7 @@ public class Game implements Runnable{
    
             if(players.size() == 0/* && !board.toString().equals(ChessBoard.defaultboardstate)*/){ //minden jatekos elment es volt lepes
 
-                //this.saveGameToDatabase();
+                this.saveGameToDatabase();
                 addmessage(new Message("stopgame"));
                 return;
             }
