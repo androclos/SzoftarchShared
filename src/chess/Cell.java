@@ -11,8 +11,8 @@ package chess;
  */
 public class Cell {
 
-    int i;
-    int j;
+    public int i;
+    public int j;
 
     public Cell(int i, int j) {
         this.i = i;

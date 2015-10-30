@@ -101,6 +101,7 @@ public class Game implements Runnable{
                 Message msgwhite= new Message("color:white");
                 Message msgblack= new Message("color:black");
                 Message msgcurrentturn= new Message("game:turn:"+currentturnclientid);
+
                 
                 sendmessage(userbyname(playercolor.get("white")).getClientId(), msgwhite);
                 sendmessage(userbyname(playercolor.get("black")).getClientId(), msgblack);
@@ -345,13 +346,13 @@ public class Game implements Runnable{
             
         }
         
-        Message gamestarted = new Message("game:gamestarted");
+        Message gamestarted = new Message("gamestart");
         Message whitecolor = new Message("color:white");
         Message blackcolor = new Message("color:black");
         
-        broadcast(gamestarted);
         sendmessage(userbyname(playercolor.get("black")).getClientId(), blackcolor);
         sendmessage(userbyname(playercolor.get("white")).getClientId(), whitecolor);
+        broadcast(gamestarted);
         
     }
     
@@ -379,7 +380,7 @@ public class Game implements Runnable{
                 
                 }
                 
-                Message succesfulmove = new Message("move:"+src.toString()+":"+dest.toString());
+                Message succesfulmove = new Message("move:"+src.i+ ":"  + src.j+ ":"+dest.i +":"+dest.j); //move:1:2:3:4
                 broadcast(succesfulmove);
             
             }
