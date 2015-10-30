@@ -149,7 +149,9 @@ public class ChessBoard {
             }
         }
         
-        return boardlist.toString();
+        String s = boardlist.toString(); //utolso : levetele
+        s = s.substring(0, s.length()-1);
+        return s;
     
     }
     

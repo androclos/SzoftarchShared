@@ -36,7 +36,6 @@ public class Game implements Runnable{
     private List<String> fixedplayernames = new ArrayList<String>(); // egyszer mar csatalkozott jatekosok
     private Map<Integer,String> fixedplayers = new HashMap<Integer,String>(); // egyszer mar csatalkozott jatekosok, userid
     private Map<String,String> playercolor;
-    //private String currentturn;
     private Integer currentturnclientid; //aktualis jatekos cliensid-je nem userid
     private Integer currentturnuserid = -1;
     private Integer gameid; 
@@ -135,9 +134,7 @@ public class Game implements Runnable{
                 
                 
                 players.add(newuser);
-                //if(fixedplayers.containsKey(newuser.getUserid()) == false)
                 if(fixedplayers.containsKey(newuser.getLoggedinuser().getUserid()) == false)
-                    //fixedplayers.put(newuser.getUserid(),newuser.getUsername());
                     fixedplayers.put(newuser.getLoggedinuser().getUserid(),newuser.getUsername());
                     
                 Message msg = new Message("message:Waiting for player 2.");
@@ -151,9 +148,7 @@ public class Game implements Runnable{
             else{
                 
                 players.add(newuser);       
-                //if(fixedplayers.containsKey(newuser.getUserid()) == false)
                 if(fixedplayers.containsKey(newuser.getLoggedinuser().getUserid()) == false)
-                    //fixedplayers.put(newuser.getUserid(),newuser.getUsername());
                     fixedplayers.put(newuser.getLoggedinuser().getUserid(),newuser.getUsername());
                 
                 this.gamestrated = true;
@@ -207,7 +202,7 @@ public class Game implements Runnable{
    
             if(players.size() == 0/* && !board.toString().equals(ChessBoard.defaultboardstate)*/){ //minden jatekos elment es volt lepes
 
-                this.saveGameToDatabase();
+                //this.saveGameToDatabase();
                 addmessage(new Message("stopgame"));
                 return;
             }
@@ -303,7 +298,6 @@ public class Game implements Runnable{
                 Cell src = new Cell(Integer.valueOf(message.get(2)),Integer.valueOf(message.get(3)));
                 Cell dest = new Cell(Integer.valueOf(message.get(4)),Integer.valueOf(message.get(5)));
                 move(clientid,src,dest);
-                //move(userbyid(clientid).getLoggedinuser().getUserid(),src,dest);
                 break;
             }
             case "leavegame":{
@@ -376,12 +370,6 @@ public class Game implements Runnable{
             if(outcome == 1){
                 
                 movedone = true;
-                /*for(Integer i : fixedplayers.keySet()){
-                
-                    if(!i.equals(id))
-                        currentturnplayerid = i;
-                
-                }*/
                 
                 for(UserClient client : players){
                 
@@ -459,13 +447,11 @@ public class Game implements Runnable{
                 
                 db.clearGamePieceList(gameid);
                 db.saveBoard(gameid, board);
-                //db.updateGameState(gameid, currentturnclientid);
                 db.updateGameState(gameid, currentturnuserid);
    
             }
             else{
             
-                //db.saveGame(getFixedPlayerId(playercolor.get("white")), getFixedPlayerId(playercolor.get("black")), currentturnclientid, gamestarttime, board);
                 db.saveGame(getFixedPlayerId(playercolor.get("white")), getFixedPlayerId(playercolor.get("black")), currentturnuserid, gamestarttime, board);
             }
             
@@ -483,9 +469,7 @@ public class Game implements Runnable{
         fixedplayers.put(Integer.valueOf(datamap.get("whiteid")), datamap.get("white"));
         playercolor.put("black",datamap.get("black"));
         playercolor.put("white",datamap.get("white"));
-        //currentturnclientid = Integer.valueOf(datamap.get("currentid"));
         gamestarttime = datamap.get("startdate");
-        //gameid = Integer.valueOf(datamap.get("gameid"));
         
 
         currentturnuserid = Integer.valueOf(datamap.get("currentid"));
