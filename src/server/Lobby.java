@@ -343,7 +343,7 @@ public class Lobby implements Runnable{
     
     public void gameneded(Integer gid){
     
-        
+        gamelist.remove(gid);
     
     }
     

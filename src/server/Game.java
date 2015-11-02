@@ -201,19 +201,18 @@ public class Game implements Runnable{
             UserClient leavingplayer = this.userbyid(clientid);
             this.players.remove(this.userbyid(clientid));
    
-            if(players.size() == 0/* && !board.toString().equals(ChessBoard.defaultboardstate)*/){ //minden jatekos elment es volt lepes
+            if(players.size() == 0 && fixedplayers.size() > 1){ //minden jatekos elment es volt lepes
 
+                
                 this.saveGameToDatabase();
                 addmessage(new Message("stopgame"));
+                lobby.gameneded(gameid);
                 return;
             }
 
-            /*if(leavingplayer.getCommthread().stopthread == false){
-                Message m1 = new Message("message:You left the game.");
-                sendmessage(id, m1); //exception dob ha nincs kliens kapcsolat hirtelen megszakad (nem csak logout)  ???
-            }*/
 
-            Message m2 = new Message("game:stopped");
+
+            Message m2 = new Message("stopgame");
             Message m3 = new Message("message:"+leavingplayer.getUsername() + " has left the game, game is halted.");
             for(UserClient u : players){
 
@@ -428,6 +427,11 @@ public class Game implements Runnable{
             List<ChessPiece> pieces = db.loadGame(gameid);
             board = new ChessBoard(pieces);
             
+            if(gamedetails.get("whiteid").equals(gamedetails.get("currentid")))
+                board.setWhiteOnTurn(true);
+            else
+                board.setWhiteOnTurn(false);
+            
             System.out.println(board.toString());
             
             
@@ -466,6 +470,12 @@ public class Game implements Runnable{
 
     public void setGameDetails(Map<String,String> datamap){
 
+        for (Map.Entry<String, String> entry : datamap.entrySet()){
+            
+            System.out.println(entry.getKey() +" : "+ entry.getValue());
+
+        }
+        
         fixedplayers.put(Integer.valueOf(datamap.get("blackid")), datamap.get("black"));
         fixedplayers.put(Integer.valueOf(datamap.get("whiteid")), datamap.get("white"));
         playercolor.put("black",datamap.get("black"));

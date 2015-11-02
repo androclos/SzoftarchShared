@@ -29,6 +29,12 @@ public class ChessBoard {
         buildBoard(list);
         
     }
+
+    public void setWhiteOnTurn(boolean whiteOnTurn) {
+        this.whiteOnTurn = whiteOnTurn;
+    }
+    
+    
     
     public Piece removePiece(Cell c)
     {
