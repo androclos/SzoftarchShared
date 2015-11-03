@@ -70,7 +70,7 @@ public class Database {
     public User Login(String name, String password) throws SQLException{
         
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        String query = "Select * FROM user WHERE name = ? AND password = ?";
+        String query = "Select * FROM user WHERE name = ? AND password = SHA2(?,224)";
         
         prepstat = conn.prepareStatement(query);
         prepstat.setString(1, name);
