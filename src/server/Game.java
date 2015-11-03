@@ -84,6 +84,8 @@ public class Game implements Runnable{
                 
                 players.add(newuser);
                 Message msg = new Message("message:Waiting for player 2.");
+                Message msgjoin = new Message("joined");
+                sendmessage(newuser.getClientId(), msgjoin);
                 sendmessage(newuser.getClientId(), msg);
                 
             }
@@ -139,6 +141,8 @@ public class Game implements Runnable{
                     fixedplayers.put(newuser.getLoggedinuser().getUserid(),newuser.getUsername());
                     
                 Message msg = new Message("message:Waiting for player 2.");
+                Message msgjoin = new Message("joined");
+                sendmessage(newuser.getClientId(), msgjoin);
                 sendmessage(newuser.getClientId(), msg);
                 
                 System.out.println("Player: "+ this.players.get(0).getUsername() + " joind to game: " + this.gameid + ".");
