@@ -20,9 +20,7 @@ import javax.jws.soap.SOAPBinding.Style;
 @WebService
 @SOAPBinding(style = Style.RPC)
 public interface WebserviceInterface {
-    
-    @WebMethod User[] getHelloWorldAsString(String name, String password) throws SQLException;
-    
+
     @WebMethod GameOutcome[] getGameOutcomes() throws SQLException;
     
 }

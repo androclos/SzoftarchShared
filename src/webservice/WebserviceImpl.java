@@ -29,22 +29,6 @@ public class WebserviceImpl implements WebserviceInterface{
     }
 
     @Override
-    public User[] getHelloWorldAsString(String name, String password) throws SQLException{
-        
-        Integer userid = -1;
-        User u = db.Login(password, name);
-        User u2 = db.Login("korte", "korte");
-        userid = db.Login(password, name).getUserid();
-        
-        User [] list = new User[2];
-        list[0] = u;
-         list[1] = u2;
-
-        return list;
-
-    }
-
-    @Override
     public GameOutcome[] getGameOutcomes() throws SQLException { //vissza listava
         
         List<GameOutcome> outcomelist = db.getGameOutcomes();
