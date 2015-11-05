@@ -64,7 +64,6 @@ public class Lobby implements Runnable{
             UserClient newuser = new UserClient(name, null, socket, commthread);
             userclients.put(name, newuser);
 
-            //Message namemsg = new Message(String.valueOf(name));
             Message namemsg = new Message("name:" + String.valueOf(name));
             newuser.getOutputStream().writeObject(namemsg);
 
@@ -250,7 +249,7 @@ public class Lobby implements Runnable{
     }
     
     public void joingame(Integer clientid, Integer gameid){
-    
+        
         this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
         this.usertogame.put(clientid, this.gamelist.get(gameid));
     
@@ -318,10 +317,6 @@ public class Lobby implements Runnable{
             }
 
             Map<Integer, String> listofloadablegames = db.getUsersGameList(userid);
-            
-            /*for(String s : listofloadablegames)
-                listofongoinggames.add(s);*/
-            
             for (Map.Entry<Integer, String> entry : listofloadablegames.entrySet()){
 
                 if(!ongoinggameids.contains(entry.getKey())){

@@ -19,13 +19,17 @@ import webservice.*;
 import javax.net.ssl.*;
 import com.sun.net.ssl.*;
 import com.sun.net.ssl.internal.ssl.Provider;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import javax.xml.ws.Endpoint;
 
 public class Server implements Runnable{
 
     protected int          serverPort   = 2222;
-    //protected ServerSocket serverSocket = null;
     protected SSLServerSocket serverSocket = null;
     protected boolean      isStopped    = false;
     protected Thread       runningThread= null;
@@ -37,13 +41,15 @@ public class Server implements Runnable{
     
     public ArrayBlockingQueue<Message> messageque = new ArrayBlockingQueue<Message>(100,true);
     
-    public Server(int port){
+    public Server(){
         try {
-            serverPort = port;
-            
+
+            Map<String,String> serverinfo = this.getServerConfig();
+
+            serverPort = Integer.valueOf(serverinfo.get("serverport"));
             Security.addProvider(new Provider());
             System.setProperty("javax.net.ssl.trustStoreType","JCEKS");
-            System.setProperty("javax.net.ssl.keyStore","C:/temp/keystore.ks"); //kulcsot tartalmazza
+            System.setProperty("javax.net.ssl.keyStore",serverinfo.get("keystore"));
             System.setProperty("javax.net.ssl.keyStorePassword","password"); //password hozza
             SSLServerSocketFactory sslServerSocketfactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
             serverSocket = (SSLServerSocket)sslServerSocketfactory.createServerSocket(serverPort);
@@ -51,8 +57,8 @@ public class Server implements Runnable{
             lob = new Lobby(messageque);
 
             databaseconnection = new Database();
-            Endpoint.publish("http://localhost:7777/ws/user", new WebserviceImpl(DatabaseConnectionFactory.GetDatabaseConnection())); // web servcei publish
-
+            Endpoint.publish(serverinfo.get("serviceaddress"), new WebserviceImpl(DatabaseConnectionFactory.GetDatabaseConnection()));
+            
             new Thread(lob).start(); //lobby
             
         } catch (IOException ex) {
@@ -110,4 +116,22 @@ public class Server implements Runnable{
         }
     }
 
+    public static HashMap<String,String> getServerConfig() throws IOException{
+        
+        Properties prop = new Properties();
+	InputStream input = null;
+
+        input = new FileInputStream("Serverconfig.properties");
+        prop.load(input);
+
+
+        HashMap<String,String> properties = new HashMap<String, String>();
+        
+        for(Map.Entry<Object,Object> entry : prop.entrySet()){          
+           properties.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));      
+        }
+    
+        return properties;
+    }
+    
 }
