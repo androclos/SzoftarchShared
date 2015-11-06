@@ -22,11 +22,6 @@ import java.util.logging.Logger;
 import javax.imageio.IIOException;
 import javax.net.ssl.SSLSocket;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
@@ -236,19 +231,23 @@ public class Lobby implements Runnable{
     
     public void startnewloadedgame(Integer clientid, Integer gameid, Message original){
     
+        System.out.println(gameid);
         ArrayBlockingQueue<Message> newgameque = new ArrayBlockingQueue<Message>(100);
         Game newgame = new Game(newgameque,gameid,this,true);
         new Thread(newgame).start();
         newgame.addmessage(original);
 
         newgame.addplayer(loggedinuserclients.get(clientid));
-        this.gamelist.put(gameids, newgame);
-        this.gamequelist.put(gameids, newgameque);
+        this.gamelist.put(gameid, newgame);
+        this.gamequelist.put(gameid, newgameque);
         this.usertogame.put(clientid, newgame);
 
     }
     
     public void joingame(Integer clientid, Integer gameid){
+        
+        for(Integer i : gamelist.keySet())
+            System.out.println(i);
         
         this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
         this.usertogame.put(clientid, this.gamelist.get(gameid));
