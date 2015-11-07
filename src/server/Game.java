@@ -158,6 +158,27 @@ public class Game implements Runnable{
                 
                 this.gamestrated = true;
                 
+                if(board != null){
+                
+                    String pcolor = "";
+                    
+                    for (Map.Entry<String, String> entry : playercolor.entrySet()){
+            
+                    if(entry.getValue().equals(newuser.getUsername()))
+                        pcolor = entry.getKey();
+        
+                    }
+                    
+                    Message msgboard = new Message("boardstate:"+board.toString());
+                    Message msgcolor= new Message("color:"+pcolor);
+                    
+                    sendmessage(newuser.getClientId(), msgboard);
+                    sendmessage(newuser.getClientId(), msgcolor);
+                    
+                    return;
+                
+                }
+                
                 newgameinit();
                 
                 System.out.println("Player: "+ this.players.get(1).getUsername() + " joind to game: " + this.gameid + ".");
