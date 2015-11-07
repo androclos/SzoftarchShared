@@ -92,6 +92,28 @@ public class Game implements Runnable{
             else{
 
                 players.add(newuser);
+                
+                if(gamehalted == true){
+                
+                    String pcolor = "";
+                    
+                    for (Map.Entry<String, String> entry : playercolor.entrySet()){
+            
+                    if(entry.getValue().equals(newuser.getUsername()))
+                        pcolor = entry.getKey();
+        
+                    }
+                    
+                    Message msgboard = new Message("boardstate:"+board.toString());
+                    Message msgcolor= new Message("color:"+pcolor);
+                    
+                    sendmessage(newuser.getClientId(), msgboard);
+                    sendmessage(newuser.getClientId(), msgcolor);
+                    
+                    return;
+                
+                }
+                
                 for(UserClient u: players){
         
                     if(u.getLoggedinuser().getUserid().equals(currentturnuserid))
