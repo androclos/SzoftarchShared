@@ -230,8 +230,15 @@ public class Lobby implements Runnable{
     }
     
     public void startnewloadedgame(Integer clientid, Integer gameid, Message original){
-    
-        System.out.println(gameid);
+        
+        if(gamelist.containsKey(gameid)){
+        
+            sendGameList(clientid);
+            messagetoclient(clientid,"message:Game already loaded.");
+            return;
+        
+        }
+        
         ArrayBlockingQueue<Message> newgameque = new ArrayBlockingQueue<Message>(100);
         Game newgame = new Game(newgameque,gameid,this,true);
         new Thread(newgame).start();
@@ -246,8 +253,13 @@ public class Lobby implements Runnable{
     
     public void joingame(Integer clientid, Integer gameid){
         
-        for(Integer i : gamelist.keySet())
-            System.out.println(i);
+        if(!this.gamelist.get(gameid).ableToJoin(userclients.get(clientid).getLoggedinuser().getUserid())){
+        
+            sendGameList(clientid);
+            messagetoclient(clientid, "message:Game is full.");
+            return;
+
+        }
         
         this.gamelist.get(gameid).addplayer(this.loggedinuserclients.get(clientid));
         this.usertogame.put(clientid, this.gamelist.get(gameid));
